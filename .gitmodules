@@ -1,3 +1,3 @@
-[submodule "support-bot"]
-	path = support-bot
+[submodule "support_bot"]
+	path = support_bot
 	url = https://github.com/murlock1000/support-bot.git

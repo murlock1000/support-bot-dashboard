@@ -168,3 +168,6 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 LOGIN_REDIRECT_URL = '/'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Support-Bot settings
+SUPPORT_BOT_CONFIG_PATH = os.path.join(BASE_DIR, 'config.yaml')
