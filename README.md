@@ -46,23 +46,30 @@ The product is designed to deliver the best possible user experience with highly
 > 👉 Download the code  
 
 ```bash
-$ git clone https://github.com/app-generator/django-material-dashboard.git
-$ cd django-material-dashboard
+$ git clone https://github.com/murlock1000/support-bot-dashboard.git
+$ cd support-bot-dashboard
 ```
 
 <br />
+> 👉 Initialize/update sub-modules  
 
-> 👉 Install modules via `VENV`  
+```bash
+$ git submodule update --init --recursive
+$ git submodule update --recursive --remote
+```
+
+> 👉 Install packages via `VENV`  
 
 ```bash
 $ virtualenv env
 $ source env/bin/activate
+$ pip install -r ./support_bot/requirements.txt
 $ pip install -r requirements.txt
 ```
 
 <br />
 
-> 👉 Set Up Database
+> 👉 Set Up Database (for web-interface)
 
 ```bash
 $ python manage.py makemigrations

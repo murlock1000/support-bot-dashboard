@@ -18,3 +18,4 @@ config.yaml
 bot.log
 settings.py
 root.crt
+core/settings.py
