@@ -16,3 +16,5 @@ env
 node_modules
 config.yaml
 bot.log
+settings.py
+root.crt
