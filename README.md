@@ -16,9 +16,9 @@ The product is designed to deliver the best possible user experience with highly
   - `can be used in any Django project` (new or legacy)
 - ✅ **Authentication**: `Django.contrib.AUTH`, Registration
 - Support-bot ticket metadata display
-  - ❌ Open/Closed ticket count
+  - ✅ Open/Closed ticket count
   - ❌ Average open ticket time
-  - ❌ Completed ticket count per date range and tags
+  - ✅ Completed ticket count per date range and tags
 - Staff analytics per staff
   - ❌ Open/Closed tickets
   - ❌ Closed ticket count per date range and tags

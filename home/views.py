@@ -4,16 +4,59 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from core import settings
 from home.apps import store
+from home.forms import TicketFetchForm
 from home.grpc_handler import fetch_avatar_url
-from home.models.repositories.DataTicketRepository import DataTicketRepository
+from home.models.repositories.DataTicketRepository import DataTicketRepository, TicketResult
 from middleman.models.Repositories.TicketRepository import TicketRepository, TicketStatus
 from django.contrib.auth.decorators import login_required
+
+def ticket_search(request):
+    ticket_rep: TicketRepository = store.repositories.ticketRep
+    data_ticket_rep = DataTicketRepository(ticket_rep)
+    
+    if request.method == 'POST':
+        form = TicketFetchForm(request.POST)
+        if form.is_valid():
+            start_date = form.cleaned_data['start_date']
+            end_date = form.cleaned_data['end_date']
+            status = form.cleaned_data['status']
+            
+            print(start_date, end_date, status)
+            ## Open ticket list info
+            open_tickets: [TicketResult] = data_ticket_rep.get_filtered_tickets(start_date, end_date, status)
+            print(open_tickets)
+            unique_staff = set()
+            staff_avatar_urls = {}
+
+            ticket_meta = []
+            for ticket in open_tickets:
+                staff = ticket_rep.get_assigned_staff(ticket.id)
+
+                for idx, user in enumerate(staff):
+                    user_id = user['user_id']
+                    if user_id not in unique_staff:
+                        unique_staff.add(user_id)
+                        staff_avatar_urls[user_id] = fetch_avatar_url(user_id)
+
+                    if staff_avatar_urls[user_id]:
+                        staff[idx]['avatar_url'] = f"{settings.MATRIX_SERVER_URL}/_matrix/media/v3/thumbnail/{staff_avatar_urls[user_id][6:]}?width=48&height=48&method=crop"
+
+                ticket_meta.append({
+                        'meta': ticket.dict(),
+                        'staff': staff,
+                    }
+                )
+    
+    else:
+        form = TicketFetchForm()
+        ticket_meta = {}
+
+    return render(request, 'pages/ticket_search.html', {'form': form, 'open_tickets': ticket_meta})
 
 @login_required
 def index(request):
     ticket_rep: TicketRepository = store.repositories.ticketRep
     data_ticket_rep = DataTicketRepository(ticket_rep)
-    
     
     ## Get values for tickers
     # Get the current date at midnight
@@ -21,7 +64,7 @@ def index(request):
     
     # Get first day of current month
     start_date = datetime(current_date.year, current_date.month, 1)
-    per_month_tickets = data_ticket_rep.get_tickets_by_month(start_date)
+    per_month_tickets = data_ticket_rep.get_tickets_by_month(start_date, datetime.now())
     tickers = {
         "open_tickets": data_ticket_rep.get_ticket_count(TicketStatus.OPEN),
         "closed_tickets_current_month": per_month_tickets[0][1] if len(per_month_tickets) > 0 else 0,
@@ -33,7 +76,7 @@ def index(request):
     ## Closed ticket counts per day this week
     # Closed tickets since this week
     start_date = current_date - timedelta(days=current_date.weekday())
-    tickets_per_day = data_ticket_rep.get_tickets_by_day(start_date)
+    tickets_per_day = data_ticket_rep.get_tickets_by_day(start_date, datetime.now())
     raised_tickets_per_day = {
         'labels': ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
         'values': [0, 0, 0, 0, 0, 0, 0]
@@ -46,7 +89,7 @@ def index(request):
 
     # Closed tickets since last year (monthly closed tickets)
     start_date = current_date - timedelta(days=365)
-    tickets_per_month = data_ticket_rep.get_tickets_by_month(start_date)
+    tickets_per_month = data_ticket_rep.get_tickets_by_month(start_date, datetime.now())
     
     raised_tickets_per_month = {
         'labels': ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
@@ -77,8 +120,6 @@ def index(request):
         "raised_tickets_per_month": raised_tickets_per_month,
         "cumulative_tickets_per_month": cumulative_tickets_per_month
     }
-    
-    print(charts)
     
     ## Open ticket list info
     open_tickets = ticket_rep.get_open_tickets()
