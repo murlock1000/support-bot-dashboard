@@ -19,3 +19,4 @@ bot.log
 settings.py
 root.crt
 core/settings.py
+.vscode/settings.json
