@@ -1,14 +1,174 @@
 from datetime import datetime, timedelta
-from itertools import accumulate
+import json
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpRequest, JsonResponse
+from grpc import RpcError
 from core import settings
 from home.apps import store
-from home.forms import TicketFetchForm
-from home.grpc_handler import fetch_avatar_url
+from home.forms import TicketFetchForm, TicketRequest, UserWithTicketRequest
+from home import grpc_handler
+from home.helpers import ReqType, validateAjaxRequest
 from home.models.repositories.DataTicketRepository import DataTicketRepository, TicketResult
 from middleman.models.Repositories.TicketRepository import TicketRepository, TicketStatus
 from django.contrib.auth.decorators import login_required
+
+
+def unassign_staff_from_ticket(request: HttpRequest):    
+    try:
+        validateAjaxRequest(request, ReqType.POST)
+    except Exception as e:
+        response = JsonResponse({"error": str(e)})
+        response.status_code = 400
+        return response
+    
+    form = UserWithTicketRequest(request.POST)
+    if form.is_valid():
+        resp = grpc_handler.unassign_staff_from_ticket(form.cleaned_data["user_id"], form.cleaned_data["ticket_id"])
+        if isinstance(resp, RpcError):
+            response = JsonResponse({"error": resp.details()})
+            response.status_code = 500
+            return response
+    else:
+        response = JsonResponse({"error": form.errors})
+        response.status_code = 400
+        return response
+    
+    return JsonResponse({'success': True})
+
+def close_ticket(request):
+    try:
+        validateAjaxRequest(request, ReqType.POST)
+    except Exception as e:
+        response = JsonResponse({"error": e})
+        response.status_code = 400
+        return response
+    
+    form = TicketRequest(request.POST)
+    if form.is_valid():
+        resp = grpc_handler.close_ticket(form.cleaned_data["ticket_id"])
+        if isinstance(resp, RpcError):
+            response = JsonResponse({"error": resp.details()})
+            response.status_code = 500
+            return response
+    else:
+        response = JsonResponse({"error": form.errors})
+        response.status_code = 400
+        return response
+    
+    return JsonResponse({'success': True})
+
+def reopen_ticket(request):
+    try:
+        validateAjaxRequest(request, ReqType.POST)
+    except Exception as e:
+        response = JsonResponse({"error": e})
+        response.status_code = 400
+        return response
+    
+    form = TicketRequest(request.POST)
+    if form.is_valid():
+        resp = grpc_handler.reopen_ticket(form.cleaned_data["ticket_id"])
+        if isinstance(resp, RpcError):
+            response = JsonResponse({"error": resp.details()})
+            response.status_code = 500
+            return response
+    else:
+        response = JsonResponse({"error": form.errors})
+        response.status_code = 400
+        return response
+    
+    return JsonResponse({'success': True})
+    
+def claim_ticket_for_staff(request):
+    try:
+        validateAjaxRequest(request, ReqType.POST)
+    except Exception as e:
+        response = JsonResponse({"error": e})
+        response.status_code = 400
+        return response
+    
+    form = UserWithTicketRequest(request.POST)
+    if form.is_valid():
+        resp = grpc_handler.claim_ticket_for_staff(form.cleaned_data["user_id"], form.cleaned_data["ticket_id"])
+        if isinstance(resp, RpcError):
+            response = JsonResponse({"error": resp.details()})
+            response.status_code = 500
+            return response
+    else:
+        response = JsonResponse({"error": form.errors})
+        response.status_code = 400
+        return response
+    
+    return JsonResponse({'success': True})
+
+def claim_ticket_for_support(request):
+    try:
+        validateAjaxRequest(request, ReqType.POST)
+    except Exception as e:
+        response = JsonResponse({"error": e})
+        response.status_code = 400
+        return response
+    
+    form = UserWithTicketRequest(request.POST)
+    if form.is_valid():
+        resp = grpc_handler.claim_ticket_for_support(form.cleaned_data["user_id"], form.cleaned_data["ticket_id"])
+        if isinstance(resp, RpcError):
+            response = JsonResponse({"error": resp.details()})
+            response.status_code = 500
+            return response
+    else:
+        response = JsonResponse({"error": form.errors})
+        response.status_code = 400
+        return response
+    
+    return JsonResponse({'success': True})
+
+def ticket(request, id):
+    ticket_rep: TicketRepository = store.repositories.ticketRep
+    data_ticket_rep = DataTicketRepository(ticket_rep)
+    
+    ## Open ticket list info
+    ticket = ticket_rep.get_all_fields(id)
+            # return {
+            #     "id": row[0],
+            #     "user_id": row[1],
+            #     "ticket_room_id": row[2],
+            #     "status": row[3],
+            #     "ticket_name": row[4],
+            #     "raised_at": row[5],
+            #     "closed_at": row[6],
+            # }
+    
+    ## Assigned staff data
+    staff = ticket_rep.get_assigned_staff(id)
+    staff_avatar_urls = {}
+    for idx, user in enumerate(staff):
+        user_id = user['user_id']
+        staff_avatar_urls[user_id] = grpc_handler.fetch_avatar_url(user_id)
+        if isinstance(staff_avatar_urls[user_id], RpcError):
+            staff_avatar_urls[user_id] = ""
+        
+        if staff_avatar_urls[user_id]:
+            staff[idx]['avatar_url'] = f"{settings.MATRIX_SERVER_URL}/_matrix/media/v3/thumbnail/{staff_avatar_urls[user_id][6:]}?width=48&height=48&method=crop"
+    
+    ## Ticket user profile
+    user_avatar_url = grpc_handler.fetch_avatar_url(ticket["user_id"])
+    if isinstance(user_avatar_url, RpcError):
+            user_avatar_url = ""
+
+    ticket['user_avatar_url'] = f"{settings.MATRIX_SERVER_URL}/_matrix/media/v3/thumbnail/{user_avatar_url[6:]}?width=48&height=48&method=crop"
+    ticket['isClosed'] = ticket['status'] == 'closed'
+    print(ticket['isClosed'])
+    ticket_meta = ({
+            'meta': ticket,
+            'staff': staff,
+        }
+    )
+    
+    context = {
+        'ticket': ticket_meta,
+    }
+    return render(request, 'pages/ticket.html', context)
 
 def ticket_search(request):
     ticket_rep: TicketRepository = store.repositories.ticketRep
@@ -36,7 +196,7 @@ def ticket_search(request):
                     user_id = user['user_id']
                     if user_id not in unique_staff:
                         unique_staff.add(user_id)
-                        staff_avatar_urls[user_id] = fetch_avatar_url(user_id)
+                        staff_avatar_urls[user_id] = grpc_handler.fetch_avatar_url(user_id)
 
                     if staff_avatar_urls[user_id]:
                         staff[idx]['avatar_url'] = f"{settings.MATRIX_SERVER_URL}/_matrix/media/v3/thumbnail/{staff_avatar_urls[user_id][6:]}?width=48&height=48&method=crop"
@@ -136,7 +296,7 @@ def index(request):
             user_id = user['user_id']
             if user_id not in unique_staff:
                 unique_staff.add(user_id)
-                staff_avatar_urls[user_id] = fetch_avatar_url(user_id)
+                staff_avatar_urls[user_id] = grpc_handler.fetch_avatar_url(user_id)
             
             if staff_avatar_urls[user_id]:
                 staff[idx]['avatar_url'] = f"{settings.MATRIX_SERVER_URL}/_matrix/media/v3/thumbnail/{staff_avatar_urls[user_id][6:]}?width=48&height=48&method=crop"

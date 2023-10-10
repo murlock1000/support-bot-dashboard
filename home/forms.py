@@ -12,3 +12,10 @@ class TicketFetchForm(forms.Form):
         choices=[('', 'Select Status')] + [(status.value, status.name) for status in TicketStatus],
         required=False,
     )
+    
+class UserWithTicketRequest(forms.Form):
+    user_id = forms.CharField()
+    ticket_id = forms.CharField()
+    
+class TicketRequest(forms.Form):
+    ticket_id = forms.CharField()

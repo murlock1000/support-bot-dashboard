@@ -1,3 +1,4 @@
 [submodule "support_bot"]
 	path = support_bot
 	url = https://github.com/murlock1000/support-bot.git
+	branch = master
