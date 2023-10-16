@@ -30,97 +30,96 @@
             <div class="nav-wrapper position-relative end-0">
               <ul class="nav nav-pills nav-fill p-1" role="tablist">
                 <li class="nav-item">
-                  <a class="nav-link mb-0 px-0 py-1 active " data-bs-toggle="tab" href="javascript:;" role="tab" aria-selected="true">
+                  <a class="nav-link mb-0 px-0 py-1 active " href="javascript:menu('ticket')" role="tab" aria-selected="true">
                     <i class="material-icons text-lg position-relative">home</i>
-                    <span class="ms-1">App</span>
+                    <span class="ms-1">Ticket</span>
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link mb-0 px-0 py-1 " data-bs-toggle="tab" href="javascript:;" role="tab" aria-selected="false">
+                  <a class="nav-link mb-0 px-0 py-1 " href="javascript:menu('messages')" role="tab" aria-selected="false">
                     <i class="material-icons text-lg position-relative">email</i>
                     <span class="ms-1">Messages</span>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link mb-0 px-0 py-1 " data-bs-toggle="tab" href="javascript:;" role="tab" aria-selected="false">
-                    <i class="material-icons text-lg position-relative">settings</i>
-                    <span class="ms-1">Settings</span>
                   </a>
                 </li>
               </ul>
             </div>
           </div>
         </div>
-        <div class="row gx-4 mb-2 col-5">
-            <div class="row">
-                <div class="col-lg-3 col-sm-6 col-12 mt-sm-0 mt-2 ">
-                    <a id="close_btn" class="btn bg-gradient-info toast-btn{% if ticket.meta.isClosed is True %} disabled {% endif %}" type="button" href="javascript: closeCurrent()">CLOSE</a>
-                </div>
-                <div class="col-lg-3 col-sm-6 col-12 mt-sm-0 mt-2">
-                    <a id="reopen_btn" class="btn bg-gradient-info mb-2 toast-btn{% if ticket.meta.isClosed is False %} disabled {% endif %}" type="button" href="javascript: reopenCurrent()">REOPEN</a>
-                </div>
-            </div>
+
+        <div id="messages-page">
         </div>
-        <div class="row">
+        <div id="ticket-page">
+          <div class="row gx-4 mb-2 col-5">
+              <div class="row">
+                  <div class="col-lg-3 col-sm-6 col-12 mt-sm-0 mt-2 ">
+                      <a id="close_btn" class="btn bg-gradient-info toast-btn{% if ticket.meta.isClosed is True %} disabled {% endif %}" type="button" href="javascript: closeCurrent()">CLOSE</a>
+                  </div>
+                  <div class="col-lg-3 col-sm-6 col-12 mt-sm-0 mt-2">
+                      <a id="reopen_btn" class="btn bg-gradient-info mb-2 toast-btn{% if ticket.meta.isClosed is False %} disabled {% endif %}" type="button" href="javascript: reopenCurrent()">REOPEN</a>
+                  </div>
+              </div>
+          </div>
           <div class="row">
-            <div class="col-12 col-xl-3">
-              <div class="card card-plain h-100">
-                <div class="card-header pb-0 p-3">
-                  <div class="row">
-                    <div class="col-md-8 d-flex align-items-center">
-                      <h6 class="mb-0">Ticket Information</h6>
+            <div class="row">
+              <div class="col-12 col-xl-3">
+                <div class="card card-plain h-100">
+                  <div class="card-header pb-0 p-3">
+                    <div class="row">
+                      <div class="col-md-8 d-flex align-items-center">
+                        <h6 class="mb-0">Ticket Information</h6>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div class="card-body p-3">
-                  <ul class="list-group">
-                    <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Raised At</strong> &nbsp; {{ ticket.meta.raised_at }}</li>
-                    <li class="list-group-item border-0 ps-0 text-sm"><strong class="text-dark">Closed At</strong> &nbsp; {{ ticket.meta.closed_at }}</li>
-                    <li class="list-group-item border-0 ps-0 text-sm" id='ticket_status'><strong class="text-dark">Status </strong> &nbsp; {{ ticket.meta.status }}</li>
-                  </ul>
+                  <div class="card-body p-3">
+                    <ul class="list-group">
+                      <li class="list-group-item border-0 ps-0 pt-0 text-sm"><strong class="text-dark">Raised At</strong> &nbsp; {{ ticket.meta.raised_at }}</li>
+                      <li class="list-group-item border-0 ps-0 text-sm"><strong class="text-dark">Closed At</strong> &nbsp; {{ ticket.meta.closed_at }}</li>
+                      <li class="list-group-item border-0 ps-0 text-sm" id='ticket_status'><strong class="text-dark">Status </strong> &nbsp; {{ ticket.meta.status }}</li>
+                    </ul>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div class="col-12 col-xl-5">
-              <div class="card card-plain h-100">
-                <div class="card-header pb-0 p-3">
-                  <h6 class="mb-0">Assigned Staff</h6>
-                </div>
-                <div class="card-body p-3">
-                  <ul class="list-group">
-                    {% for staff in ticket.staff  %}
-                    <li class="list-group-item border-0 d-flex align-items-center px-0 mb-2 pt-0">
+              <div class="col-12 col-xl-5">
+                <div class="card card-plain h-100">
+                  <div class="card-header pb-0 p-3">
+                    <h6 class="mb-0">Assigned Staff</h6>
+                  </div>
+                  <div class="card-body p-3">
+                    <ul class="list-group">
+                      {% for staff in ticket.staff  %}
+                      <li class="list-group-item border-0 d-flex align-items-center px-0 mb-2 pt-0">
 
-                      <div class="avatar me-3">
-                        <a href="javascript:;" class="avatar avatar-m rounded-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{{ staff.user_id }}">
-                            <img src="{{ staff.avatar_url }}" alt="team5">
-                          </a>
-                      </div>
-                      <div class="d-flex align-items-start flex-column justify-content-center">
-                        <h6 class="mb-0 text-sm">{{ staff.user_id }}</h6>
-                      </div>
-                      <a class="btn btn-link pe-2 ps-0 mb-0 ms-auto w-50 w-md-auto" href="javascript: addStaffCurrent('{{ staff.user_id }}')">Invite to room</a>
-                      <a class="btn btn-link pe-1 ps-0 mb-0 ms-auto w-50 w-md-auto" href="javascript: removeStaffCurrent('{{ staff.user_id }}')">Remove</a>
-                    </li>
-                    {% endfor %}
-                    
-                    <li class="list-group-item border-0 d-flex align-items-center px-0 mb-2 pt-0">
-                        <div class="dropdown">
-                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdown_staff" data-toggle="dropdown" aria-haspopup="true"
-                                aria-expanded="false">
-                                Staff User ID
-                            </button>
-                            <div id="menu" class="dropdown-menu" aria-labelledby="dropdown_staff">
-                                <form class="px-4 py-2">
-                                    <input type="search" class="form-control" id="searchStaff" placeholder="@user:server" autofocus="autofocus">
-                                </form>
-                                <div id="menuItems"></div>
-                                <div id="empty" class="dropdown-header">No Staff members</div>
-                            </div>
+                        <div class="avatar me-3">
+                          <a href="javascript:;" class="avatar avatar-m rounded-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{{ staff.user_id }}">
+                              <img src="{{ staff.avatar_url }}" alt="team5">
+                            </a>
                         </div>
-                        <a class="btn btn-link pe-2 ps-0 mb-0 ms-auto w-50 w-md-auto" href="javascript: addStaffCurrent($('#dropdown_staff')[0].textContent);">Invite to room</a>
-                    </li>
-                  </ul>
+                        <div class="d-flex align-items-start flex-column justify-content-center">
+                          <h6 class="mb-0 text-sm">{{ staff.user_id }}</h6>
+                        </div>
+                        <a class="btn btn-link pe-2 ps-0 mb-0 ms-auto w-50 w-md-auto" href="javascript: addStaffCurrent('{{ staff.user_id }}')">Invite to room</a>
+                        <a class="btn btn-link pe-1 ps-0 mb-0 ms-auto w-50 w-md-auto" href="javascript: removeStaffCurrent('{{ staff.user_id }}')">Remove</a>
+                      </li>
+                      {% endfor %}
+
+                      <li class="list-group-item border-0 d-flex align-items-center px-0 mb-2 pt-0">
+                          <div class="dropdown">
+                              <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdown_staff" data-toggle="dropdown" aria-haspopup="true"
+                                  aria-expanded="false">
+                                  Staff User ID
+                              </button>
+                              <div id="menu" class="dropdown-menu" aria-labelledby="dropdown_staff">
+                                  <form class="px-4 py-2">
+                                      <input type="search" class="form-control" id="searchStaff" placeholder="@user:server" autofocus="autofocus">
+                                  </form>
+                                  <div id="menuItems"></div>
+                                  <div id="empty" class="dropdown-header">No Staff members</div>
+                              </div>
+                          </div>
+                          <a class="btn btn-link pe-2 ps-0 mb-0 ms-auto w-50 w-md-auto" href="javascript: addStaffCurrent($('#dropdown_staff')[0].textContent);">Invite to room</a>
+                      </li>
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
@@ -138,7 +137,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta.2/js/bootstrap.bundle.min.js"></script>
   <script src="{% static 'js/support-bot.js' %}"></script> 
   <script>
-
     function setTicketState(state){
         $('#ticket_status').text(state);
 
@@ -184,7 +182,8 @@
         showInfo("Adding "+staff_id+" staff", "Executing call");
         addStaff(url, staff_id, ticket_id);
     }
-
+  </script>
+  <script>
     //Initialize with the list of staff members
     let staff_usernames = {{ all_staff|safe }};
 
@@ -244,5 +243,19 @@
     buildDropDown(staff_usernames);
 
 
+  </script>
+  <script>
+    function menu(selection){
+      if (selection == "ticket"){
+        $("#messages-page").hide();
+        $("#ticket-page").show();
+        return;
+      }
+      if(selection == "messages"){
+        $("#messages-page").show();
+        $("#ticket-page").hide();
+        return;
+      }
+    }
   </script>
   {% endblock scripts %}
