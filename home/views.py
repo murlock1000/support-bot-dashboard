@@ -9,6 +9,7 @@ from home.forms import TicketFetchForm, TicketRequest, UserWithTicketRequest
 from home import grpc_handler
 from home.helpers import ReqType, validateAjaxRequest
 from home.models.repositories.DataTicketRepository import DataTicketRepository, TicketResult
+from middleman.models.Repositories.StaffRepository import StaffRepository
 from middleman.models.Repositories.TicketRepository import TicketRepository, TicketStatus
 from django.contrib.auth.decorators import login_required
 
@@ -127,6 +128,12 @@ def ticket(request, id):
     ticket_rep: TicketRepository = store.repositories.ticketRep
     data_ticket_rep = DataTicketRepository(ticket_rep)
     
+    staff_rep: StaffRepository = store.repositories.staffRep
+    
+    ## Staff list for invites
+    
+    all_staff = staff_rep.get_all_staff()
+    
     ## Open ticket list info
     ticket = ticket_rep.get_all_fields(id)
             # return {
@@ -167,6 +174,7 @@ def ticket(request, id):
     
     context = {
         'ticket': ticket_meta,
+        'all_staff': all_staff,
     }
     return render(request, 'pages/ticket.html', context)
 
