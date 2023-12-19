@@ -130,7 +130,7 @@
               <div class="table-responsive">
                 <table class="table align-items-center mb-0">
                   <thead>
-                    <tr>
+                    <tr> 
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Ticket Name</th>
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Ticket ID</th>
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Assigned Support</th>
@@ -141,6 +141,15 @@
                   <tbody>
                     {% for ticket in open_tickets %}
                     <tr>
+                      <td>
+                        <a href="{% url 'ticket' ticket.meta.id%}">
+                          <div class="d-flex px-2 py-1">
+                            <div class="d-flex flex-column justify-content-center">
+                              <h6 class="mb-0 text-sm">{{ ticket.meta.ticket_name }}</h6>
+                            </div>
+                          </div>
+                        </a>
+                      </td>
                       <td>
                         <div class="d-flex px-2 py-1">
                           <div class="d-flex flex-column justify-content-center">

@@ -19,7 +19,17 @@ def fetch_avatar_url(user_id:str) -> Union[str, RpcError]:
     except RpcError as rpc_error:
         logging.error("Received error: %s", rpc_error)
         return rpc_error
-        
+
+#def fetch_room_messages(room_id:str) -> Union[dict, RpcError]:
+#    stub = support_bot_pb2_grpc.RoomHandlerStub(channel)
+#    request = support_bot_pb2.AvatarURLRequest(user_id=user_id)
+#    try:
+#        response = stub.FetchAvatarURL(request)
+#        return response.avatar_url
+#    except RpcError as rpc_error:
+#        logging.error("Received error: %s", rpc_error)
+#        return rpc_error
+
 def unassign_staff_from_ticket(user_id:str, ticket_id:str) -> Optional[RpcError]:
     stub = support_bot_pb2_grpc.CommandHandlerStub(channel)
     request = support_bot_pb2.UserWithTicketRequest(user_id=user_id, ticket_id=ticket_id)

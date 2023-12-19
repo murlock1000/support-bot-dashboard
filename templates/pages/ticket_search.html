@@ -54,11 +54,13 @@
                     {% for ticket in open_tickets %}
                     <tr>
                       <td>
-                        <div class="d-flex px-2 py-1">
-                          <div class="d-flex flex-column justify-content-center">
-                            <h6 class="mb-0 text-sm">{{ ticket.meta.ticket_name }}</h6>
+                        <a href="{% url 'ticket' ticket.meta.id%}">
+                          <div class="d-flex px-2 py-1">
+                            <div class="d-flex flex-column justify-content-center">
+                              <h6 class="mb-0 text-sm">{{ ticket.meta.ticket_name }}</h6>
+                            </div>
                           </div>
-                        </div>
+                        </a>
                       </td>
                       <td>
                         <div class="d-flex px-2 py-1">

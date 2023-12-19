@@ -14,6 +14,16 @@ from middleman.models.Repositories.TicketRepository import TicketRepository, Tic
 from django.contrib.auth.decorators import login_required
 
 
+#def fetch_room_messages(request, room_id):
+#    resp = grpc_handler.fetch_room_messages(room_id)
+#    if isinstance(resp, RpcError):
+#        response = JsonResponse({"error": resp.details()})
+#        response.status_code = 500
+#        return response
+    
+#    return JsonResponse({'success': True, "messages": resp})
+        
+@login_required
 def unassign_staff_from_ticket(request: HttpRequest):    
     try:
         validateAjaxRequest(request, ReqType.POST)
@@ -36,6 +46,7 @@ def unassign_staff_from_ticket(request: HttpRequest):
     
     return JsonResponse({'success': True})
 
+@login_required
 def close_ticket(request):
     try:
         validateAjaxRequest(request, ReqType.POST)
@@ -58,6 +69,7 @@ def close_ticket(request):
     
     return JsonResponse({'success': True})
 
+@login_required
 def reopen_ticket(request):
     try:
         validateAjaxRequest(request, ReqType.POST)
@@ -79,7 +91,8 @@ def reopen_ticket(request):
         return response
     
     return JsonResponse({'success': True})
-    
+
+@login_required
 def claim_ticket_for_staff(request):
     try:
         validateAjaxRequest(request, ReqType.POST)
@@ -102,6 +115,7 @@ def claim_ticket_for_staff(request):
     
     return JsonResponse({'success': True})
 
+@login_required
 def claim_ticket_for_support(request):
     try:
         validateAjaxRequest(request, ReqType.POST)
@@ -124,6 +138,7 @@ def claim_ticket_for_support(request):
     
     return JsonResponse({'success': True})
 
+@login_required
 def ticket(request, id):
     ticket_rep: TicketRepository = store.repositories.ticketRep
     data_ticket_rep = DataTicketRepository(ticket_rep)
@@ -178,6 +193,7 @@ def ticket(request, id):
     }
     return render(request, 'pages/ticket.html', context)
 
+@login_required
 def ticket_search(request):
     ticket_rep: TicketRepository = store.repositories.ticketRep
     data_ticket_rep = DataTicketRepository(ticket_rep)
