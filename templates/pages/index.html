@@ -160,7 +160,7 @@
                       <td>
                         <div class="avatar-group mt-2">
                           {% for staff in ticket.staff  %}
-                          <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{{ staff.user_id }}">
+                          <a href="{% url 'staff' staff.user_id%}" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{{ staff.user_id }}">
                             <img src="{{ staff.avatar_url }}" alt="team5">
                           </a>
                           {% endfor %}
