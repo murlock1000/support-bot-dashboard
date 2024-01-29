@@ -98,6 +98,7 @@
             <span class="nav-link-text ms-1">Ticket Search</span>
           </a>
         </li>
+        <!--
         <li class="nav-item">
           <a class="nav-link text-white {% if 'tables' in segment %} active {% endif %} " href="{% url 'tables' %}">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
@@ -115,22 +116,6 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white {% if 'vr' in segment %} active {% endif %} " href="{% url 'vr' %}">
-            <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-              <i class="material-icons opacity-10">view_in_ar</i>
-            </div>
-            <span class="nav-link-text ms-1">Virtual Reality</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-white {% if 'rtl' in segment %} active {% endif %} " href="{% url 'rtl' %}">
-            <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-              <i class="material-icons opacity-10">format_textdirection_r_to_l</i>
-            </div>
-            <span class="nav-link-text ms-1">RTL</span>
-          </a>
-        </li>
-        <li class="nav-item">
           <a class="nav-link text-white {% if 'notification' in segment %} active {% endif %} " href="{% url 'notification' %}">
             <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="material-icons opacity-10">notifications</i>
@@ -138,6 +123,7 @@
             <span class="nav-link-text ms-1">Notifications</span>
           </a>
         </li>
+        !-->
         <li class="nav-item mt-3">
           <h6 class="ps-4 ms-2 text-uppercase text-xs text-white font-weight-bolder opacity-8">Account pages</h6>
         </li>
@@ -157,21 +143,7 @@
             <span class="nav-link-text ms-1">Sign In</span>
           </a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link text-white " href="{% url 'register' %}">
-            <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-              <i class="material-icons opacity-10">assignment</i>
-            </div>
-            <span class="nav-link-text ms-1">Sign Up</span>
-          </a>
-        </li>
         {% endif %}
       </ul>
-    </div>
-    <div class="sidenav-footer position-absolute w-100 bottom-0 ">
-      <div class="mx-3">
-        <a class="btn bg-gradient-primary mt-4 w-100" target="_blank" 
-           href="https://appseed.us/product/material-dashboard2-pro/django/" type="button">PRO Version</a>
-      </div>
     </div>
   </aside>

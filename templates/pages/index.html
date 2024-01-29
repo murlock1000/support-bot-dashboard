@@ -109,10 +109,10 @@
                   <h6>Open Tickets</h6>
                   <p class="text-sm mb-0">
                     <i class="fa fa-check text-info" aria-hidden="true"></i>
-                    <span class="font-weight-bold ms-1">30 done</span> this month
+                    <span class="font-weight-bold ms-1">- done</span> this month
                   </p>
                 </div>
-                <div class="col-lg-6 col-5 my-auto text-end">
+               <!-- <div class="col-lg-6 col-5 my-auto text-end">
                   <div class="dropdown float-lg-end pe-4">
                     <a class="cursor-pointer" id="dropdownTable" data-bs-toggle="dropdown" aria-expanded="false">
                       <i class="fa fa-ellipsis-v text-secondary"></i>
@@ -124,6 +124,7 @@
                     </ul>
                   </div>
                 </div>
+                -->
               </div>
             </div>
             <div class="card-body px-0 pb-2">
@@ -135,7 +136,6 @@
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Ticket ID</th>
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Assigned Support</th>
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Duration</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Completion</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -149,13 +149,6 @@
                             </div>
                           </div>
                         </a>
-                      </td>
-                      <td>
-                        <div class="d-flex px-2 py-1">
-                          <div class="d-flex flex-column justify-content-center">
-                            <h6 class="mb-0 text-sm">{{ ticket.meta.ticket_name }}</h6>
-                          </div>
-                        </div>
                       </td>
                       <td>
                         <div class="d-flex px-2 py-1">
@@ -174,19 +167,7 @@
                         </div>
                       </td>
                       <td class="align-middle text-center text-sm">
-                        <span class="text-xs font-weight-bold"> 2 days </span>
-                      </td>
-                      <td class="align-middle">
-                        <div class="progress-wrapper w-75 mx-auto">
-                          <div class="progress-info">
-                            <div class="progress-percentage">
-                              <span class="text-xs font-weight-bold">60%</span>
-                            </div>
-                          </div>
-                          <div class="progress">
-                            <div class="progress-bar bg-gradient-info w-60" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
-                          </div>
-                        </div>
+                        <span class="text-xs font-weight-bold"> {{ ticket.meta.time_open }} </span>
                       </td>
                     </tr>
                     {% endfor %}
@@ -208,7 +189,7 @@
                     <i class="material-icons text-success text-gradient">notifications</i>
                   </span>
                   <div class="timeline-content">
-                    <h6 class="text-dark text-sm font-weight-bold mb-0">$2400, Design changes</h6>
+                    <h6 class="text-dark text-sm font-weight-bold mb-0">Ticket #194305 Closed</h6>
                     <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">22 DEC 7:20 PM</p>
                   </div>
                 </div>
@@ -217,7 +198,7 @@
                     <i class="material-icons text-danger text-gradient">code</i>
                   </span>
                   <div class="timeline-content">
-                    <h6 class="text-dark text-sm font-weight-bold mb-0">New order #1832412</h6>
+                    <h6 class="text-dark text-sm font-weight-bold mb-0">New Ticket #1832412</h6>
                     <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">21 DEC 11 PM</p>
                   </div>
                 </div>

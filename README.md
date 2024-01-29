@@ -61,6 +61,7 @@ $ git submodule update --recursive --remote
 > 👉 Install packages via `VENV`  
 
 ```bash
+$ sudo apt install libpq-dev python3-dev build-essential libolm-dev
 $ virtualenv env
 $ source env/bin/activate
 $ pip install -r ./support_bot/requirements.txt
