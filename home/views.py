@@ -275,10 +275,11 @@ def staff(request, user_id):
         'values': [0, 0, 0, 0, 0, 0, 0]
     }
     for day_tickets in tickets_per_day:
-        day = day_tickets[0].strftime('%a')[:2]
-        id = raised_tickets_per_day['labels'].index(day)
+        if day_tickets[0] is not None:
+            day = day_tickets[0].strftime('%a')[:2]
+            id = raised_tickets_per_day['labels'].index(day)
         
-        raised_tickets_per_day['values'][id] = day_tickets[1]
+            raised_tickets_per_day['values'][id] = day_tickets[1]
     
     # Closed tickets since last year (monthly closed tickets)
     start_date = datetime(current_date.year-1, current_date.month+1, 1)
@@ -431,10 +432,11 @@ def index(request):
         'values': [0, 0, 0, 0, 0, 0, 0]
     }
     for day_tickets in tickets_per_day:
-        day = day_tickets[0].strftime('%a')[:2]
-        id = raised_tickets_per_day['labels'].index(day)
+        if day_tickets[0] is not None:
+            day = day_tickets[0].strftime('%a')[:2]
+            id = raised_tickets_per_day['labels'].index(day)
         
-        raised_tickets_per_day['values'][id] = day_tickets[1]
+            raised_tickets_per_day['values'][id] = day_tickets[1]
 
     # Closed tickets since last year (monthly closed tickets)
     start_date = datetime(current_date.year-1, current_date.month+1, 1)
