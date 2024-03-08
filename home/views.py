@@ -258,10 +258,10 @@ def staff(request, user_id):
 
     # Get first day of current month
     start_date = datetime(current_date.year, current_date.month, 1)
-    per_month_tickets = data_ticket_rep.get_staff_tickets_by_month(start_date, datetime.now(), staff_id)
+    current_month_closed_tickets = data_ticket_rep.get_staff_closed_tickets_by_month(start_date, datetime.now(), staff_id)
     tickers = {
         "open_tickets": data_ticket_rep.get_staff_ticket_count(TicketStatus.OPEN, staff_id),
-        "closed_tickets_current_month": per_month_tickets[0][1] if len(per_month_tickets) > 0 else 0,
+        "closed_tickets_current_month": current_month_closed_tickets[0][1] if len(current_month_closed_tickets) > 0 else 0,
         "closed_tickets": data_ticket_rep.get_staff_ticket_count(TicketStatus.CLOSED, staff_id),
     }
     
@@ -269,7 +269,7 @@ def staff(request, user_id):
     ## Closed ticket counts per day this week
     # Closed tickets since this week
     start_date = current_date - timedelta(days=current_date.weekday())
-    tickets_per_day = data_ticket_rep.get_staff_tickets_by_day(start_date, datetime.now(), staff_id)
+    tickets_per_day = data_ticket_rep.get_staff_opened_tickets_by_day(start_date, datetime.now(), staff_id)
     raised_tickets_per_day = {
         'labels': ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
         'values': [0, 0, 0, 0, 0, 0, 0]
@@ -281,32 +281,30 @@ def staff(request, user_id):
         raised_tickets_per_day['values'][id] = day_tickets[1]
     
     # Closed tickets since last year (monthly closed tickets)
-    start_date = current_date - timedelta(days=365)
-    tickets_per_month = data_ticket_rep.get_staff_tickets_by_month(start_date, datetime.now(), staff_id)
+    start_date = datetime(current_date.year-1, current_date.month+1, 1)
+    raised_tickets_per_month_data = data_ticket_rep.get_staff_opened_tickets_by_month(start_date, datetime.now(), staff_id)
     
     raised_tickets_per_month = {
         'labels': ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
         'values': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,]
     }
     
-    for month_tickets in tickets_per_month:
-        month = month_tickets[0].strftime('%b')
-        id = raised_tickets_per_month['labels'].index(month)
-        raised_tickets_per_month['values'][id] = month_tickets[1]
+    for month_tickets in raised_tickets_per_month_data:
+        if month_tickets[0] != None: 
+            month = month_tickets[0].strftime('%b')
+            id = raised_tickets_per_month['labels'].index(month)
+            raised_tickets_per_month['values'][id] = month_tickets[1]
     
     ## Cumulative ticket calculation
-    total = tickers['closed_tickets']
+    total = tickers['closed_tickets'] + tickers['open_tickets']
     cumulative_tickets_per_month = {
         'labels': ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-        'values': []
+        'values': [0 for x in range(12)]
     }
     
-    cumulative_tickets_per_month['values'] = [s for s in raised_tickets_per_month['values']]
-    total = total - max(cumulative_tickets_per_month['values'])
-    for key, value in enumerate(cumulative_tickets_per_month['values']):
-        cumulative_tickets_per_month['values'][key] = value + total
-        total = cumulative_tickets_per_month['values'][key]
-    
+    for month_id in range(datetime.now().month-1, -len(cumulative_tickets_per_month['labels'])+datetime.now().month-1, -1):
+        cumulative_tickets_per_month['values'][month_id] = total
+        total -= raised_tickets_per_month['values'][month_id]
     
     charts = {
         "raised_tickets_per_day": raised_tickets_per_day,
@@ -415,10 +413,10 @@ def index(request):
     
     # Get first day of current month
     start_date = datetime(current_date.year, current_date.month, 1)
-    per_month_tickets = data_ticket_rep.get_tickets_by_month(start_date, datetime.now())
+    current_month_closed_tickets = data_ticket_rep.get_closed_tickets_by_month(start_date, datetime.now())
     tickers = {
         "open_tickets": data_ticket_rep.get_ticket_count(TicketStatus.OPEN),
-        "closed_tickets_current_month": per_month_tickets[0][1] if len(per_month_tickets) > 0 else 0,
+        "closed_tickets_current_month": current_month_closed_tickets[0][1] if len(current_month_closed_tickets) > 0 else 0,
         "closed_tickets": data_ticket_rep.get_ticket_count(TicketStatus.CLOSED),
     }
     
@@ -427,7 +425,7 @@ def index(request):
     ## Closed ticket counts per day this week
     # Closed tickets since this week
     start_date = current_date - timedelta(days=current_date.weekday())
-    tickets_per_day = data_ticket_rep.get_tickets_by_day(start_date, datetime.now())
+    tickets_per_day = data_ticket_rep.get_opened_tickets_by_day(start_date, datetime.now())
     raised_tickets_per_day = {
         'labels': ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
         'values': [0, 0, 0, 0, 0, 0, 0]
@@ -439,32 +437,30 @@ def index(request):
         raised_tickets_per_day['values'][id] = day_tickets[1]
 
     # Closed tickets since last year (monthly closed tickets)
-    start_date = current_date - timedelta(days=365)
-    tickets_per_month = data_ticket_rep.get_tickets_by_month(start_date, datetime.now())
+    start_date = datetime(current_date.year-1, current_date.month+1, 1)
+    raised_tickets_per_month_data = data_ticket_rep.get_opened_tickets_by_month(start_date, datetime.now())
     
     raised_tickets_per_month = {
         'labels': ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
         'values': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,]
     }
     
-    for month_tickets in tickets_per_month:
-        month = month_tickets[0].strftime('%b')
-        id = raised_tickets_per_month['labels'].index(month)
-        raised_tickets_per_month['values'][id] = month_tickets[1]
+    for month_tickets in raised_tickets_per_month_data:
+        if month_tickets[0] != None: 
+            month = month_tickets[0].strftime('%b')
+            id = raised_tickets_per_month['labels'].index(month)
+            raised_tickets_per_month['values'][id] = month_tickets[1]
     
     ## Cumulative ticket calculation
-    total = tickers['closed_tickets']
+    total = tickers['closed_tickets'] + tickers['open_tickets']
     cumulative_tickets_per_month = {
         'labels': ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-        'values': []
+        'values': [0 for x in range(12)]
     }
     
-    cumulative_tickets_per_month['values'] = [s for s in raised_tickets_per_month['values']]
-    total = total - max(cumulative_tickets_per_month['values'])
-    for key, value in enumerate(cumulative_tickets_per_month['values']):
-        cumulative_tickets_per_month['values'][key] = value + total
-        total = cumulative_tickets_per_month['values'][key]
-    
+    for month_id in range(datetime.now().month-1, -len(cumulative_tickets_per_month['labels'])+datetime.now().month-1, -1):
+        cumulative_tickets_per_month['values'][month_id] = total
+        total -= raised_tickets_per_month['values'][month_id]
     
     charts = {
         "raised_tickets_per_day": raised_tickets_per_day,

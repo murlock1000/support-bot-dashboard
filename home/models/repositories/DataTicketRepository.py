@@ -90,40 +90,70 @@ class DataTicketRepository(TicketRepository):
         count = self.storage.cursor.fetchone()
         return count[0] if count else 0
     
-    def get_tickets_by_month(self, start_date:datetime, end_date:datetime) -> [(datetime, int)]:
+    def get_opened_tickets_by_month(self, start_date:datetime, end_date:datetime) -> [(datetime, int)]:
         self.storage._execute("""
             SELECT DATE_TRUNC('month', closed_at) AS month, COUNT(id) FROM Tickets
-            WHERE raised_at >= ? AND raised_at <= ? AND closed_at IS NOT NULL
+            WHERE raised_at >= ? AND raised_at <= ?
             GROUP BY month
             ORDER BY month;
         """, (start_date, end_date,))
         data = self.storage.cursor.fetchall()
         return data
     
-    def get_staff_tickets_by_month(self, start_date:datetime, end_date:datetime, staff_id:str) -> [(datetime, int)]:
+    def get_closed_tickets_by_month(self, start_date:datetime, end_date:datetime) -> [(datetime, int)]:
+        self.storage._execute("""
+            SELECT DATE_TRUNC('month', closed_at) AS month, COUNT(id) FROM Tickets
+            WHERE closed_at >= ? AND closed_at <= ? AND closed_at IS NOT NULL
+            GROUP BY month
+            ORDER BY month;
+        """, (start_date, end_date,))
+        data = self.storage.cursor.fetchall()
+        return data
+    
+    def get_staff_closed_tickets_by_month(self, start_date:datetime, end_date:datetime, staff_id:str) -> [(datetime, int)]:
         self.storage._execute("""
             SELECT DATE_TRUNC('month', closed_at) AS month, COUNT(id) FROM Tickets t JOIN TicketsStaffRelation ts ON t.id=ts.ticket_id
-            WHERE raised_at >= ? AND raised_at <= ? AND closed_at IS NOT NULL AND staff_id = ?
+            WHERE closed_at >= ? AND closed_at <= ? AND closed_at IS NOT NULL AND staff_id = ?
             GROUP BY month
             ORDER BY month;
         """, (start_date, end_date, staff_id,))
         data = self.storage.cursor.fetchall()
         return data
     
-    def get_tickets_by_day(self, start_date:datetime, end_date:datetime) -> [(datetime, int)]:
+    def get_staff_opened_tickets_by_month(self, start_date:datetime, end_date:datetime, staff_id:str) -> [(datetime, int)]:
+        self.storage._execute("""
+            SELECT DATE_TRUNC('month', closed_at) AS month, COUNT(id) FROM Tickets t JOIN TicketsStaffRelation ts ON t.id=ts.ticket_id
+            WHERE raised_at >= ? AND raised_at <= ? AND staff_id = ?
+            GROUP BY month
+            ORDER BY month;
+        """, (start_date, end_date, staff_id,))
+        data = self.storage.cursor.fetchall()
+        return data
+    
+    def get_opened_tickets_by_day(self, start_date:datetime, end_date:datetime) -> [(datetime, int)]:
         self.storage._execute("""
             SELECT DATE_TRUNC('day', closed_at) AS day, COUNT(id) FROM Tickets
-            WHERE raised_at >= ? AND raised_at <= ? AND closed_at IS NOT NULL
+            WHERE raised_at >= ? AND raised_at <= ?
             GROUP BY day
             ORDER BY day;
         """, (start_date, end_date,))
         data = self.storage.cursor.fetchall()
         return data
     
-    def get_staff_tickets_by_day(self, start_date:datetime, end_date:datetime, staff_id:str) -> [(datetime, int)]:
+    def get_staff_opened_tickets_by_day(self, start_date:datetime, end_date:datetime, staff_id:str) -> [(datetime, int)]:
         self.storage._execute("""
             SELECT DATE_TRUNC('day', closed_at) AS day, COUNT(id) FROM Tickets t JOIN TicketsStaffRelation ts ON t.id=ts.ticket_id
-            WHERE raised_at >= ? AND raised_at <= ? AND closed_at IS NOT NULL AND staff_id = ?
+            WHERE raised_at >= ? AND raised_at <= ? AND staff_id = ?
+            GROUP BY day
+            ORDER BY day;
+        """, (start_date, end_date, staff_id,))
+        data = self.storage.cursor.fetchall()
+        return data
+    
+    def get_staff_closed_tickets_by_day(self, start_date:datetime, end_date:datetime, staff_id:str) -> [(datetime, int)]:
+        self.storage._execute("""
+            SELECT DATE_TRUNC('day', closed_at) AS day, COUNT(id) FROM Tickets t JOIN TicketsStaffRelation ts ON t.id=ts.ticket_id
+            WHERE closed_at >= ? AND closed_at <= ? AND closed_at IS NOT NULL AND staff_id = ?
             GROUP BY day
             ORDER BY day;
         """, (start_date, end_date, staff_id,))
