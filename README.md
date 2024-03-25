@@ -20,10 +20,10 @@ The product is designed to deliver the best possible user experience with highly
   - ❌ Average open ticket time
   - ✅ Completed ticket count per date range and tags
 - Staff analytics per staff
-  - ❌ Open/Closed tickets
-  - ❌ Closed ticket count per date range and tags
+  - ✅ Open/Closed tickets
+  - ✅ Closed ticket count per date range and tags
 - Single ticket analysis
-  - ❌ Display ticket metadata (raised by, claimed by, name...)
+  - ✅ Display ticket metadata (raised by, claimed by, name...)
   - ❌ Display ticket tags
   - ❌ Retrieve and display ticket messages (admin only)
     - ❌ Text messages
@@ -33,8 +33,8 @@ The product is designed to deliver the best possible user experience with highly
     - ❌ Other messages (calls)
 - Single ticket commands
   - ❌ Add/Modify ticket tags
-  - ❌ Close/Reopen ticket
-  - ❌ Assign staff to ticket
+  - ✅ Close/Reopen ticket
+  - ✅ Assign staff to ticket
 - Support-bot commands
   - ❌ Give staff status for user
   - ❌ Raise ticket for user and staff
