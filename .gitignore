@@ -7,8 +7,8 @@
 /node_modules/
 build/
 env
-/staticfiles/
-
+/data/staticfiles/
+/dependencies/support_bot/*
 #src
 *.sqlite*
 
@@ -20,3 +20,4 @@ settings.py
 root.crt
 core/settings.py
 .vscode/settings.json
+.vscode/*

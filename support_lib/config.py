@@ -6,7 +6,7 @@ from typing import Any, List
 
 import yaml
 
-from middleman.errors import ConfigError
+from support_bot.errors import ConfigError
 
 # Prevent debug messages from peewee lib
 logger = logging.getLogger()

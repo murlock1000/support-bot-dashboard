@@ -9,7 +9,7 @@ from typing import Optional, List
 from nio import MegolmEvent
 
 if TYPE_CHECKING:
-    from middleman.models.Repositories.Repositories import Repositories
+    from support_bot.models.Repositories.Repositories import Repositories
 
 logger = logging.getLogger(__name__)
 

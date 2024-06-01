@@ -1,6 +1,6 @@
 from dataclasses import asdict, dataclass
 from datetime import datetime
-from middleman.models.Repositories.TicketRepository import TicketRepository, TicketStatus
+from support_bot.models.Repositories.TicketRepository import TicketRepository, TicketStatus
 
 @dataclass
 class TicketResult():

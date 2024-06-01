@@ -9,8 +9,8 @@ from home.forms import TicketFetchForm, TicketRequest, UserWithTicketRequest
 from home import grpc_handler
 from home.helpers import ReqType, validateAjaxRequest, format_time_difference
 from home.models.repositories.DataTicketRepository import DataTicketRepository, TicketResult
-from middleman.models.Repositories.StaffRepository import StaffRepository
-from middleman.models.Repositories.TicketRepository import TicketRepository, TicketStatus
+from support_bot.models.Repositories.StaffRepository import StaffRepository
+from support_bot.models.Repositories.TicketRepository import TicketRepository, TicketStatus
 from django.contrib.auth.decorators import login_required
 
 

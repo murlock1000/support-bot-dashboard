@@ -1,6 +1,6 @@
 from django import forms
 
-from middleman.models.Repositories.TicketRepository import TicketStatus
+from support_bot.models.Repositories.TicketRepository import TicketStatus
 
 
 class TicketFetchForm(forms.Form):

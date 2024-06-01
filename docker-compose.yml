@@ -1,11 +1,20 @@
 version: '3.8'
+
+volumes:
+  supportbotdashboard_data_volume:
+    external: true
+
 services:
-  appseed-app:
-    container_name: appseed_app
+  support-bot-dashboard:
+    container_name: support_bot_dashboard
     restart: always
     build: .
+    volumes:
+      - supportbotdashboard_data_volume:/data
+    extra_hosts:
+      - "localhost:${HOST_IP_ADDRESS}"
     networks:
-      - db_network
+      - grpc_backend
       - web_network
   nginx:
     container_name: nginx
@@ -18,10 +27,11 @@ services:
     networks:
       - web_network
     depends_on: 
-      - appseed-app
+      - support_bot_dashboard
 networks:
-  db_network:
-    driver: bridge
+  grpc_backend:
+    name: support_bot_grpc_backend
+    external: true
   web_network:
     driver: bridge
  

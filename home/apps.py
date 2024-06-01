@@ -2,7 +2,7 @@ import os
 from django.apps import AppConfig
 from support_lib.config import Config
 from support_lib.storage import Storage
-from middleman.models.Repositories.Repositories import Repositories
+from support_bot.models.Repositories.Repositories import Repositories
 from django.conf import settings
 
 import grpc
