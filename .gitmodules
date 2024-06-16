@@ -1,4 +1,3 @@
-[submodule "support_bot"]
-	path = support_bot
+[submodule "dependencies/support-bot"]
+	path = dependencies/support-bot
 	url = https://github.com/murlock1000/support-bot.git
-	branch = master
