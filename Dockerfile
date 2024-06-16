@@ -34,8 +34,8 @@ RUN apk add --no-cache \
 # such that these dependencies can be cached
 # This speeds up subsequent image builds when the source code is changed
 RUN mkdir -p /app/support_bot
-COPY ./dependencies/support_bot/support_bot/__init__.py /app/support_bot/
-COPY ./dependencies/support_bot/README.md ./support_bot/main.py /app/
+COPY ./dependencies/support-bot/support_bot/__init__.py /app/support_bot/
+COPY ./dependencies/support-bot/README.md ./support_bot/main.py /app/
 
 # Build the dependencies
 RUN pip install --upgrade pip
@@ -47,7 +47,7 @@ ENV POETRY_NO_INTERACTION=1 \
     POETRY_VIRTUALENVS_CREATE=0
 
 WORKDIR /app/dependencies/support_bot/
-COPY ./dependencies/support_bot/pyproject.toml ./dependencies/support_bot/poetry.lock /app/dependencies/support_bot/
+COPY ./dependencies/support-bot/pyproject.toml ./dependencies/support-bot/poetry.lock /app/dependencies/support_bot/
 
 # Export poetry.lock to requirements file omitting hashes for faster dependency resolution
 # And building libraries in external folder /python-libs
@@ -86,10 +86,10 @@ RUN apk add --no-cache \
 WORKDIR /app/
 
 # Now copy the source code for support_bot
-COPY ./dependencies/support_bot/*.py ./dependencies/support_bot/*.md /app/support_bot/
-COPY ./dependencies/support_bot/support_bot /app/dependencies/support_bot/support_bot/
-COPY ./dependencies/support_bot/grpc_server/ /app/dependencies/support_bot/grpc_server/
-COPY ./dependencies/support_bot/proto/ /app/dependencies/support_bot/proto/
+COPY ./dependencies/support-bot/*.py ./dependencies/support-bot/*.md /app/support_bot/
+COPY ./dependencies/support-bot/support_bot /app/dependencies/support_bot/support_bot/
+COPY ./dependencies/support-bot/grpc_server/ /app/dependencies/support_bot/grpc_server/
+COPY ./dependencies/support-bot/proto/ /app/dependencies/support_bot/proto/
 
 # Copy project files
 COPY *.py *.md /app/
