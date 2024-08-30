@@ -203,6 +203,7 @@ def ticket(request, id):
 
     ticket['user_avatar_url'] = f"{settings.MATRIX_SERVER_URL}/_matrix/media/v3/thumbnail/{user_avatar_url[6:]}?width=48&height=48&method=crop"
     ticket['isClosed'] = ticket['status'] == 'closed'
+    ticket['isDeleted'] = ticket['status'] == 'deleted'
     print(ticket['isClosed'])
     ticket_meta = ({
             'meta': ticket,

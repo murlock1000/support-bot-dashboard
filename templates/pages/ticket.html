@@ -52,7 +52,7 @@
           <div class="row gx-4 mb-2 col-5">
               <div class="row">
                   <div class="col-lg-3 col-sm-6 col-12 mt-sm-0 mt-2 ">
-                      <a id="close_btn" class="btn bg-gradient-info toast-btn{% if ticket.meta.isClosed is True %} disabled {% endif %}" type="button" href="javascript: closeCurrent()">CLOSE</a>
+                      <a id="close_btn" class="btn bg-gradient-info toast-btn{% if ticket.meta.isClosed is True or ticket.meta.isDeleted %} disabled {% endif %}" type="button" href="javascript: closeCurrent()">CLOSE</a>
                   </div>
                   <div class="col-lg-3 col-sm-6 col-12 mt-sm-0 mt-2">
                       <a id="reopen_btn" class="btn bg-gradient-info mb-2 toast-btn{% if ticket.meta.isClosed is False %} disabled {% endif %}" type="button" href="javascript: reopenCurrent()">REOPEN</a>
@@ -147,7 +147,11 @@
             $('#reopen_btn').removeClass("disabled");
             $('#close_btn').addClass("disabled");
             $('#delete_btn').removeClass("disabled");
-        }else{
+        }else if (state == 'deleted'){
+            $('#reopen_btn').addClass("disabled");
+            $('#close_btn').addClass("disabled");
+            $('#delete_btn').addClass("disabled");
+        }else {
             $('#reopen_btn').addClass("disabled");
             $('#close_btn').removeClass("disabled");
             $('#delete_btn').addClass("disabled");
