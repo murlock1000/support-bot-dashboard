@@ -57,6 +57,15 @@ def reopen_ticket(ticket_id:str) -> Optional[RpcError]:
         logging.error("Received error: %s", rpc_error)
         return rpc_error
     
+def delete_ticket_room(ticket_id:str) -> Optional[RpcError]:
+    stub = support_bot_pb2_grpc.CommandHandlerStub(channel)
+    request = support_bot_pb2.TicketRequest(ticket_id=ticket_id)
+    try:
+        stub.DeleteTicketRoom(request)
+    except RpcError as rpc_error:
+        logging.error("Received error: %s", rpc_error)
+        return rpc_error
+    
 def claim_ticket_for_staff(user_id:str, ticket_id:str) -> Optional[RpcError]:
     stub = support_bot_pb2_grpc.CommandHandlerStub(channel)
     request = support_bot_pb2.UserWithTicketRequest(user_id=user_id, ticket_id=ticket_id)

@@ -93,6 +93,29 @@ def reopen_ticket(request):
     return JsonResponse({'success': True})
 
 @login_required
+def delete_ticket_room(request):
+    try:
+        validateAjaxRequest(request, ReqType.POST)
+    except Exception as e:
+        response = JsonResponse({"error": e})
+        response.status_code = 400
+        return response
+    
+    form = TicketRequest(request.POST)
+    if form.is_valid():
+        resp = grpc_handler.delete_ticket_room(form.cleaned_data["ticket_id"])
+        if isinstance(resp, RpcError):
+            response = JsonResponse({"error": resp.details()})
+            response.status_code = 500
+            return response
+    else:
+        response = JsonResponse({"error": form.errors})
+        response.status_code = 400
+        return response
+    
+    return JsonResponse({'success': True})
+
+@login_required
 def claim_ticket_for_staff(request):
     try:
         validateAjaxRequest(request, ReqType.POST)

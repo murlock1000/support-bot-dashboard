@@ -22,3 +22,4 @@ root.crt
 core/settings.py
 .vscode/settings.json
 .vscode/*
+credentials/

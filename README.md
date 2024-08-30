@@ -34,6 +34,7 @@ The product is designed to deliver the best possible user experience with highly
 - Single ticket commands
   - ❌ Add/Modify ticket tags
   - ✅ Close/Reopen ticket
+  - ✅ Delete ticket room
   - ✅ Assign staff to ticket
 - Support-bot commands
   - ❌ Give staff status for user

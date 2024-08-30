@@ -57,6 +57,9 @@
                   <div class="col-lg-3 col-sm-6 col-12 mt-sm-0 mt-2">
                       <a id="reopen_btn" class="btn bg-gradient-info mb-2 toast-btn{% if ticket.meta.isClosed is False %} disabled {% endif %}" type="button" href="javascript: reopenCurrent()">REOPEN</a>
                   </div>
+                  <div class="col-lg-3 col-sm-6 col-12 mt-sm-0 mt-2">
+                    <a id="delete_btn" class="btn bg-gradient-info mb-2 toast-btn{% if ticket.meta.isClosed is False %} disabled {% endif %}" type="button" href="javascript: deleteCurrent()">DELETE ROOM</a>
+                </div>
               </div>
           </div>
           <div class="row">
@@ -143,9 +146,11 @@
         if (state == 'closed'){
             $('#reopen_btn').removeClass("disabled");
             $('#close_btn').addClass("disabled");
+            $('#delete_btn').addClass("disabled");
         }else{
             $('#reopen_btn').addClass("disabled");
             $('#close_btn').removeClass("disabled");
+            $('#delete_btn').removeClass("disabled");
         }
     }
 
@@ -168,6 +173,16 @@
             setTicketState("open");
         })
     }
+
+    function deleteCurrent(){
+      url = '{% url "delete_ticket_room" %}'
+      ticket_id = '{{ ticket.meta.id }}'
+      showInfo("Deleting ticket "+ticket_id + " room.", "Executing call");
+
+      reopen(url, ticket_id).success(() => {
+          setTicketState("deleted");
+      })
+  }
 
     function removeStaffCurrent(staff_id){
         url = '{% url "unassign_staff_from_ticket" %}';
