@@ -64,10 +64,21 @@ $ git submodule update --recursive --remote
 $ sudo apt install libpq-dev python3-dev build-essential libolm-dev
 $ virtualenv env
 $ source env/bin/activate
-$ pip install -r ./support_bot/requirements.txt
+$ pip install poetry
+$ cd ./dependencies/support-bot/
+$ poetry --project-file ./dependencies/support-bot/pyproject.toml install
+$ cd ../../
 $ pip install -r requirements.txt
 ```
 
+<br />
+
+> 👉 Configure settings.py (for web-interface)
+
+```bash
+$ cp ./core/settings.py.sample ./core/settings.py
+```
+Edit the default configuration according to your needs.
 <br />
 
 > 👉 Set Up Database (for web-interface)

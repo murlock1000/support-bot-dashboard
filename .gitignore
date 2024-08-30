@@ -8,7 +8,8 @@
 build/
 env
 /data/staticfiles/
-/dependencies/support_bot/*
+/dependencies/support_bot_OLD/*
+*/support_bot
 #src
 *.sqlite*
 
