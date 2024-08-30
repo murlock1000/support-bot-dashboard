@@ -179,7 +179,7 @@
       ticket_id = '{{ ticket.meta.id }}'
       showInfo("Deleting ticket "+ticket_id + " room.", "Executing call");
 
-      reopen(url, ticket_id).success(() => {
+      removeTicketRoom(url, ticket_id).success(() => {
           setTicketState("deleted");
       })
   }

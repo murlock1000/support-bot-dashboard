@@ -78,6 +78,27 @@ function reopen(url, ticket_id){
       });
 }
 
+function removeTicketRoom(url, ticket_id){
+  return $.ajax({
+      url: url,
+      type: "POST",
+      dataType: "json",
+      data: {ticket_id: ticket_id},
+      headers: {
+        "X-Requested-With": "XMLHttpRequest",
+        "X-CSRFToken": getCookie("csrftoken"),  // don't forget to include the 'getCookie' function
+      },
+      success: (data) => {
+        showSuccess("Ticket room deleted successfully", "Success");
+        console.log(data);
+      },
+      error: (error) => {
+        showDanger(error.responseText, error.status);
+        console.log(error);
+      }
+    });
+}
+
 function close(url, ticket_id){
     return $.ajax({
         url: url,
