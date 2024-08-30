@@ -146,11 +146,11 @@
         if (state == 'closed'){
             $('#reopen_btn').removeClass("disabled");
             $('#close_btn').addClass("disabled");
-            $('#delete_btn').addClass("disabled");
+            $('#delete_btn').removeClass("disabled");
         }else{
             $('#reopen_btn').addClass("disabled");
             $('#close_btn').removeClass("disabled");
-            $('#delete_btn').removeClass("disabled");
+            $('#delete_btn').addClass("disabled");
         }
     }
 
