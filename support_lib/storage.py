@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
+import importlib
 import json
 import logging
 from dataclasses import asdict
@@ -11,11 +12,22 @@ from nio import MegolmEvent
 if TYPE_CHECKING:
     from support_bot.models.Repositories.Repositories import Repositories
 
+# The latest migration version of the database.
+#
+# Database migrations are applied starting from the number specified in the database's
+# `migration_version` table + 1 (or from 0 if this table does not yet exist) up until
+# the version specified here.
+#
+# When a migration is performed, the `migration_version` table should be incremented.
+
+latest_migration_version = 13
+
 logger = logging.getLogger(__name__)
+
 
 class Storage(object):
     def __init__(self, database_config):
-        """Connect to the database
+        """Setup the database
 
         Runs an initial setup or migrations depending on whether a database file has already
         been created
@@ -32,7 +44,20 @@ class Storage(object):
         self.cursor = self.conn.cursor()
         self.db_type = database_config["type"]
 
-        logger.info(f"Database connection of type '{self.db_type}' complete")
+        # Try to check the current migration version
+        migration_level = 0
+        # noinspection PyBroadException
+        try:
+            self._execute("SELECT version FROM migration_version")
+            row = self.cursor.fetchone()
+            migration_level = row[0]
+        except Exception:
+            self._initial_setup()
+        finally:
+            if migration_level < latest_migration_version:
+                self._run_migrations(migration_level)
+
+        logger.info(f"Database initialization of type '{self.db_type}' complete")
 
     def set_repositories(self, repositories: Repositories):
         self.repositories:Repositories = repositories
@@ -54,6 +79,59 @@ class Storage(object):
             conn.set_isolation_level(0)
 
             return conn
+
+    def _initial_setup(self):
+        """Initial setup of the database"""
+        logger.info("Performing initial database setup...")
+
+        # Set up the migration_version table
+        self._execute(
+            """
+            CREATE TABLE migration_version (
+                version INTEGER PRIMARY KEY
+            )
+        """
+        )
+
+        # Initially set the migration version to 0
+        self._execute(
+            """
+            INSERT INTO migration_version (
+                version
+            ) VALUES (?)
+        """,
+            (0,),
+        )
+
+        # Set up any other necessary database tables here
+
+        logger.info("Database setup complete")
+
+    def _run_migrations(self, current_migration_version: int):
+        """Execute database migrations. Migrates the database to the
+        `latest_migration_version`
+
+        Args:
+            current_migration_version: The migration version that the database is
+                currently at
+        """
+        logger.debug("Checking for necessary database migrations...")
+
+        while current_migration_version < latest_migration_version:
+            next_migration_version = current_migration_version + 1
+            logger.info(
+                f"Migrating the database from v{current_migration_version} to v{next_migration_version}...",
+            )
+
+            migration = importlib.import_module(f".migrations.{str(next_migration_version).rjust(3, '0')}", "support_bot")
+            # noinspection PyUnresolvedReferences
+            migration.migrate(self)
+
+            # Update the stored migration version
+            self._execute("UPDATE migration_version SET version = ?", (next_migration_version,))
+
+            logger.info(f"Database migrated to v{next_migration_version}")
+            current_migration_version += 1
 
     def _execute(self, *args):
         """A wrapper around cursor.execute that transforms placeholder ?'s to %s for postgres

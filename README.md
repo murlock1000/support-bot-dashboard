@@ -73,10 +73,11 @@ $ pip install -r requirements.txt
 
 <br />
 
-> 👉 Configure settings.py (for web-interface)
+> 👉 Configure various config files
 
 ```bash
 $ cp ./core/settings.py.sample ./core/settings.py
+$ cp ./data/sample.config.yaml ./data/config.yaml
 ```
 Edit the default configuration according to your needs.
 <br />
@@ -107,6 +108,21 @@ $ python manage.py runserver
 At this point, the app runs at `http://127.0.0.1:8000/`. 
 
 <br />
+
+## Update support-bot dependency
+
+> 👉 First, update sub-modules  
+
+```bash
+$ git submodule update --recursive --remote
+```
+
+> 👉 Copy over static files from most up-to-date support-bot branch  
+
+```bash
+$ cp config.py ./support_lib/config.py
+$ cp storage.py ./support_lib/storage.py
+```
 
 ## Codebase structure
 

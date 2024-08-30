@@ -56,6 +56,18 @@ class Config(object):
             handler.setFormatter(formatter)
             logger.addHandler(handler)
 
+        # Storage setup
+        self.store_path = self._get_cfg(["storage", "store_path"], required=True)
+
+        # Create the store folder if it doesn't exist
+        if not os.path.isdir(self.store_path):
+            if not os.path.exists(self.store_path):
+                os.mkdir(self.store_path)
+            else:
+                raise ConfigError(
+                    f"storage.store_path '{self.store_path}' is not a directory"
+                )
+
         # Database setup
         database_path = self._get_cfg(["storage", "database"], required=True)
 
@@ -79,28 +91,54 @@ class Config(object):
             raise ConfigError("matrix.user_id must be in the form @name:domain")
         self.user_localpart = self.user_id.split(":")[0][1:]
 
+        self.user_password = self._get_cfg(["matrix", "user_password"], required=False)
+        self.user_token = self._get_cfg(["matrix", "user_token"], required=False)
+        if not self.user_token and not self.user_password:
+            raise ConfigError("Must supply either user token or password")
+
+        self.device_id = self._get_cfg(["matrix", "device_id"], required=True)
+        self.device_name = self._get_cfg(
+            ["matrix", "device_name"], default="nio-template"
+        )
         self.homeserver_url = self._get_cfg(["matrix", "homeserver_url"], required=True)
 
         self.command_prefix = self._get_cfg(["command_prefix"], default="!c") + " "
 
+        # GRPC Server credentials
+        self.server_certificate = self._get_cfg(["grpc_server", "server_certificate"], required=True)
+        self.server_certificate_key = self._get_cfg(["grpc_server", "server_certificate_key"], required=True)
+        self.root_certificate = self._get_cfg(["grpc_server", "root_certificate"], required=True)
+
         # Matrix logging
         matrix_logging_enabled = self._get_cfg(["logging", "matrix_logging", "enabled"], default=False)
-        self.matrix_logging_room = None
+        self.matrix_logging_room = self._get_cfg(["logging", "matrix_logging", "room"], required=True)
         if matrix_logging_enabled:
+            if not self.user_token:
+                logger.warning("Not setting up Matrix logging - requires user access token to be set")
+            else:
                 self.matrix_logging_room = self._get_cfg(["logging", "matrix_logging", "room"], required=True)
+                handler = matrix.Handler(
+                    homeserver_url=self.homeserver_url,
+                    access_token=self.user_token,
+                    room_id=self.matrix_logging_room,
+                )
+                handler.setFormatter(formatter)
+                logger.addHandler(handler)
 
         # Middleman specific config
-        self.management_room = self._get_cfg(["middleman", "management_room"], required=True)
+        self.management_room = self._get_cfg(["support_bot", "management_room"], required=True)
         self.management_room_id = self.management_room if self.management_room.startswith("!") else None
-        self.anonymise_senders = self._get_cfg(["middleman", "anonymise_senders"], required=False, default=False)
-        self.mention_only_rooms = self._get_cfg(["middleman", "mention_only_rooms"], required=False, default=[])
+        self.anonymise_senders = self._get_cfg(["support_bot", "anonymise_senders"], required=False, default=False)
+        self.welcome_message = self._get_cfg(["support_bot", "welcome_message"], required=False)
+        self.mention_only_rooms = self._get_cfg(["support_bot", "mention_only_rooms"], required=False, default=[])
         self.mention_only_always_for_named = self._get_cfg(
-            ["middleman", "mention_only_always_for_named"], required=False, default=False,
+            ["support_bot", "mention_only_always_for_named"], required=False, default=False,
         )
-        self.confirm_reaction = self._get_cfg(["middleman", "confirm_reaction", "enabled"], required=False, default=False)
-        self.confirm_reaction_success = self._get_cfg(["middleman", "confirm_reaction", "success"], required=False, default="✔️")
-        self.confirm_reaction_fail = self._get_cfg(["middleman", "confirm_reaction", "fail"], required=False, default="❗")
-        self.relay_management_media = self._get_cfg(["middleman", "relay_management_media"], required=False, default=False)
+        self.confirm_reaction = self._get_cfg(["support_bot", "confirm_reaction", "enabled"], required=False, default=False)
+        self.confirm_reaction_success = self._get_cfg(["support_bot", "confirm_reaction", "success"], required=False, default="✔️")
+        self.confirm_reaction_fail = self._get_cfg(["support_bot", "confirm_reaction", "fail"], required=False, default="❗")
+        self.relay_management_media = self._get_cfg(["support_bot", "relay_management_media"], required=False, default=False)
+        self.ignore_old_messages = self._get_cfg(["ignore_old_messages"], default=False)
 
     def _get_cfg(
         self, path: List[str], default: Any = None, required: bool = True,
