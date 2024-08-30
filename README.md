@@ -78,6 +78,7 @@ $ pip install -r requirements.txt
 ```bash
 $ cp ./core/settings.py.sample ./core/settings.py
 $ cp ./data/sample.config.yaml ./data/config.yaml
+$ cp credentials ./data/
 ```
 Edit the default configuration according to your needs.
 <br />
