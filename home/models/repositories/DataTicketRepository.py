@@ -18,17 +18,28 @@ class DataTicketRepository(TicketRepository):
         self.storage = ticket_rep.storage
         
     def get_filtered_tickets(self, start_date: datetime, end_date: datetime, status: TicketStatus) -> [TicketResult]:
-        
-        if status:
-            self.storage._execute("""
-                SELECT id, user_id, ticket_name, status FROM Tickets
-                WHERE raised_at >= ? AND raised_at <= ? AND status = ?
-            """, (start_date, end_date, status,))
+        if start_date is None or end_date is None:
+            if status:
+                self.storage._execute("""
+                    SELECT id, user_id, ticket_name, status FROM Tickets
+                    WHERE raised_at IS null AND status = ?
+                """, (status,))
+            else:
+                self.storage._execute("""
+                    SELECT id, user_id, ticket_name, status FROM Tickets
+                    WHERE raised_at is null
+                """, ())
         else:
-            self.storage._execute("""
-                SELECT id, user_id, ticket_name, status FROM Tickets
-                WHERE raised_at >= ? AND raised_at <= ?
-            """, (start_date, end_date,))
+            if status:
+                self.storage._execute("""
+                    SELECT id, user_id, ticket_name, status FROM Tickets
+                    WHERE raised_at >= ? AND raised_at <= ? AND status = ?
+                """, (start_date, end_date, status,))
+            else:
+                self.storage._execute("""
+                    SELECT id, user_id, ticket_name, status FROM Tickets
+                    WHERE raised_at >= ? AND raised_at <= ?
+                """, (start_date, end_date,))
 
         tickets = self.storage.cursor.fetchall()
         return [

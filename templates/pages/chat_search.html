@@ -11,14 +11,14 @@
             {{ form.as_p }}
             <button type="submit">Submit</button>
         </form>
-      {% if open_tickets %}
+      {% if open_chats %}
       <div class="row mb-4">
         <div class="col-lg-8 col-md-6 mb-md-0 mb-4">
           <div class="card">
             <div class="card-header pb-0">
               <div class="row">
                 <div class="col-lg-6 col-7">
-                  <h6>Open Tickets</h6>
+                  <h6>Open Chats</h6>
                   <p class="text-sm mb-0">
                     <i class="fa fa-check text-info" aria-hidden="true"></i>
                     <span class="font-weight-bold ms-1">?? done</span> this month
@@ -43,34 +43,26 @@
                 <table class="table align-items-center mb-0">
                   <thead>
                     <tr>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Ticket Name</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Ticket ID</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Chat room ID</th>
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Assigned Support</th>
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {% for ticket in open_tickets %}
+                    {% for chat in open_chats %}
                     <tr>
                       <td>
-                        <a href="{% url 'ticket' ticket.meta.id%}">
+                        <a href="{% url 'chat' chat.meta.chat_room_id%}">
                           <div class="d-flex px-2 py-1">
                             <div class="d-flex flex-column justify-content-center">
-                              <h6 class="mb-0 text-sm">{{ ticket.meta.ticket_name }}</h6>
+                              <h6 class="mb-0 text-sm">{{ chat.meta.chat_room_id }}</h6>
                             </div>
                           </div>
                         </a>
                       </td>
                       <td>
-                        <div class="d-flex px-2 py-1">
-                          <div class="d-flex flex-column justify-content-center">
-                            <h6 class="mb-0 text-sm">{{ ticket.meta.id }}</h6>
-                          </div>
-                        </div>
-                      </td>
-                      <td>
                         <div class="avatar-group mt-2">
-                          {% for staff in ticket.staff  %}
+                          {% for staff in chat.staff  %}
                           <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{{ staff.user_id }}">
                             <img src="{{ staff.avatar_url }}" alt="team5">
                           </a>
@@ -80,7 +72,7 @@
                       <td>
                         <div class="d-flex px-2 py-1">
                           <div class="d-flex flex-column justify-content-center">
-                            <h6 class="mb-0 text-sm">{{ ticket.meta.status }}</h6>
+                            <h6 class="mb-0 text-sm">{{ chat.meta.status }}</h6>
                           </div>
                         </div>
                       </td>
