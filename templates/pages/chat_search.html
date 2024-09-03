@@ -5,92 +5,177 @@
 
 {% block content %}
 
-    <div class="container-fluid py-4">
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">Submit</button>
-        </form>
-      {% if open_chats %}
-      <div class="row mb-4">
-        <div class="col-lg-8 col-md-6 mb-md-0 mb-4">
-          <div class="card">
-            <div class="card-header pb-0">
-              <div class="row">
-                <div class="col-lg-6 col-7">
-                  <h6>Open Chats</h6>
-                  <p class="text-sm mb-0">
-                    <i class="fa fa-check text-info" aria-hidden="true"></i>
-                    <span class="font-weight-bold ms-1">?? done</span> this month
-                  </p>
-                </div>
-                <div class="col-lg-6 col-5 my-auto text-end">
-                  <div class="dropdown float-lg-end pe-4">
-                    <a class="cursor-pointer" id="dropdownTable" data-bs-toggle="dropdown" aria-expanded="false">
-                      <i class="fa fa-ellipsis-v text-secondary"></i>
-                    </a>
-                    <ul class="dropdown-menu px-2 py-3 ms-sm-n4 ms-n5" aria-labelledby="dropdownTable">
-                      <li><a class="dropdown-item border-radius-md" href="javascript:;">Action</a></li>
-                      <li><a class="dropdown-item border-radius-md" href="javascript:;">Another action</a></li>
-                      <li><a class="dropdown-item border-radius-md" href="javascript:;">Something else here</a></li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="card-body px-0 pb-2">
-              <div class="table-responsive">
-                <table class="table align-items-center mb-0">
-                  <thead>
-                    <tr>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Chat room ID</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Assigned Support</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for chat in open_chats %}
-                    <tr>
-                      <td>
-                        <a href="{% url 'chat' chat.meta.chat_room_id%}">
-                          <div class="d-flex px-2 py-1">
-                            <div class="d-flex flex-column justify-content-center">
-                              <h6 class="mb-0 text-sm">{{ chat.meta.chat_room_id }}</h6>
-                            </div>
-                          </div>
-                        </a>
-                      </td>
-                      <td>
-                        <div class="avatar-group mt-2">
-                          {% for staff in chat.staff  %}
-                          <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{{ staff.user_id }}">
-                            <img src="{{ staff.avatar_url }}" alt="team5">
-                          </a>
-                          {% endfor %}
-                        </div>
-                      </td>
-                      <td>
-                        <div class="d-flex px-2 py-1">
-                          <div class="d-flex flex-column justify-content-center">
-                            <h6 class="mb-0 text-sm">{{ chat.meta.status }}</h6>
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      {% endif %}
-      {% include 'includes/footer.html' %}
-    </div>
-  {% endblock content %}
+<div class="container-fluid py-4">
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Submit</button>
+    </form>
 
-  {% block scripts %}
-  <script>
-  </script>
-  {% endblock scripts %}
+    {% if open_chats %}
+    <div class="row mb-4">
+        <div class="col-lg-8 col-md-6 mb-md-0 mb-4">
+            <div class="card">
+                <div class="card-header pb-0">
+                    <div class="row">
+                        <div class="col-lg-6 col-7">
+                            <h6>Open Chats</h6>
+                            <p class="text-sm mb-0">
+                                <i class="fa fa-check text-info" aria-hidden="true"></i>
+                                <span class="font-weight-bold ms-1">?? done</span> this month
+                            </p>
+                        </div>
+                        <div class="col-lg-6 col-5 my-auto text-end">
+                            <div class="dropdown float-lg-end pe-4">
+                                <a class="cursor-pointer" id="dropdownTable" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fa fa-ellipsis-v text-secondary"></i>
+                                </a>
+                                <ul class="dropdown-menu px-2 py-3 ms-sm-n4 ms-n5" aria-labelledby="dropdownTable">
+                                    <li><a class="dropdown-item border-radius-md" href="javascript:;">Action</a></li>
+                                    <li><a class="dropdown-item border-radius-md" href="javascript:;">Another action</a></li>
+                                    <li><a class="dropdown-item border-radius-md" href="javascript:;">Something else here</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body px-0 pb-2">
+                    <div class="table-responsive">
+                        <table class="table align-items-center mb-0">
+                            <thead>
+                                <tr>
+                                    <th><input type="checkbox" id="select-all"></th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Chat room ID</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Chat user ID</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Assigned Support</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Action Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for chat in open_chats %}
+                                <tr data-chat-room-id="{{ chat.meta.chat_room_id }}">
+                                    <td><input type="checkbox" class="select-chat" data-chat-room-id="{{ chat.meta.chat_room_id }}"></td>
+                                    <td>
+                                        <a href="{% url 'chat' chat.meta.chat_room_id%}">
+                                            <div class="d-flex px-2 py-1">
+                                                <div class="d-flex flex-column justify-content-center">
+                                                    <h6 class="mb-0 text-sm">{{ chat.meta.chat_room_id }}</h6>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex px-2 py-1">
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <h6 class="mb-0 text-sm">{{ chat.meta.user_id }}</h6>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="avatar-group mt-2">
+                                            {% for staff in chat.staff %}
+                                            <a href="javascript:;" class="avatar avatar-xs rounded-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{{ staff.user_id }}">
+                                                <img src="{{ staff.avatar_url }}" alt="team5">
+                                            </a>
+                                            {% endfor %}
+                                        </div>
+                                    </td>
+                                    <td class="{% if chat.isActive %}bg-success{% endif %}">
+                                        <div class="d-flex px-2 py-1">
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <h6 class="mb-0 text-sm">{{ chat.meta.status }}</h6>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="action-status">
+                                        <!-- Placeholder for action status messages -->
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button id="close-selected" class="btn btn-warning">Close Selected</button>
+                    <button id="delete-selected" class="btn btn-danger">Delete Selected</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    {% include 'includes/footer.html' %}
+</div>
+
+{% endblock content %}
+
+{% block scripts %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta.2/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'js/support-bot.js' %}"></script>
+
+<script>
+$(document).ready(function() {
+
+    // Select/unselect all checkboxes
+    $('#select-all').click(function() {
+        $('.select-chat').prop('checked', this.checked);
+    });
+
+    // Bulk close selected chats
+    $('#close-selected').click(function() {
+        let selectedChats = [];
+        $('.select-chat:checked').each(function() {
+            selectedChats.push($(this).data('chat-room-id'));
+        });
+        if (selectedChats.length > 0) {
+            performBulkAction('close', selectedChats);
+        } else {
+            $('.action-status').text('No chats selected.').removeClass('text-success').addClass('text-danger');
+        }
+    });
+
+    // Bulk delete selected chats
+    $('#delete-selected').click(function() {
+        let selectedChats = [];
+        $('.select-chat:checked').each(function() {
+            selectedChats.push($(this).data('chat-room-id'));
+        });
+        if (selectedChats.length > 0) {
+            performBulkAction('delete', selectedChats);
+        } else {
+            $('.action-status').text('No chats selected.').removeClass('text-success').addClass('text-danger');
+        }
+    });
+
+    // Perform bulk action (close/delete)
+    function performBulkAction(action, chatRoomIds) {
+        let urlClose = '{% url "close_chat" %}';
+        let urlDelete = '{% url "delete_chat_room" %}';
+        let url = action === 'close' ? urlClose : urlDelete;
+
+        chatRoomIds.forEach(chat_room_id => {
+            let $row = $('tr[data-chat-room-id="' + chat_room_id + '"]');
+            if (action === 'close') {
+                closeChat(url, chat_room_id).done((data) => {
+                    $row.find('.action-status').text('Closed successfully').removeClass('text-danger').addClass('text-success');
+                    $row.find('td.bg-success').removeClass('bg-success').addClass('bg-secondary'); // Example to change row color
+                }).fail((error) => {
+                    $row.find('.action-status').text('Error closing: ' + error.responseText).removeClass('text-success').addClass('text-danger');
+                });
+            } else if (action === 'delete') {
+                deleteChatRoom(url, chat_room_id).done((data) => {
+                    $row.find('.action-status').text('Deleted successfully').removeClass('text-danger').addClass('text-success');
+                    $row.find('td.bg-success').removeClass('bg-success').addClass('bg-secondary'); // Example to change row color
+                }).fail((error) => {
+                    $row.find('.action-status').text('Error deleting: ' + error.responseText).removeClass('text-success').addClass('text-danger');
+                });
+            }
+        });
+    }
+
+});
+</script>
+
+{% endblock scripts %}

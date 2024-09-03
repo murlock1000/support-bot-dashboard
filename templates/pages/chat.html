@@ -153,13 +153,16 @@
     }
 
     function closeCurrent(){
-        url = '{% url "close_chat" %}'
-        chat_room_id = '{{ chat.meta.chat_room_id }}'
-        showInfo("Closing chat "+chat_room_id, "Executing call");
+      url = '{% url "close_chat" %}'
+      chat_room_id = '{{ chat.meta.chat_room_id }}'
+      showInfo("Closing chat "+chat_room_id, "Executing call");
 
-        closeChat(url, chat_room_id).success(() => {
-            setChatState("closed");
-        })
+      closeChat(url, chat_room_id).done((data) => {
+        setChatState("closed");
+        showSuccess("Chat closed successfully", "Success");
+      }).fail((error) => {
+        showDanger(error.responseText, error.status);
+      });
     }
 
     function deleteCurrent(){
@@ -167,9 +170,12 @@
       chat_room_id = '{{ chat.meta.chat_room_id }}'
       showInfo("Deleting chat "+chat_room_id + " room.", "Executing call");
 
-      removeChatRoom(url, chat_room_id).success(() => {
-          setChatState("deleted");
-      })
+      deleteChatRoom(url, chat_room_id).done((data) => {
+        setChatState("deleted");
+        showSuccess("Chat deleted successfully", "Success");
+      }).fail((error) => {
+        showDanger(error.responseText, error.status);
+      });
   }
 
     function removeStaffCurrent(staff_id){

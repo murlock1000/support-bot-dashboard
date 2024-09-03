@@ -163,9 +163,12 @@
         ticket_id = '{{ ticket.meta.id }}'
         showInfo("Closing ticket "+ticket_id, "Executing call");
 
-        close(url, ticket_id).success(() => {
-            setTicketState("closed");
-        })
+        closeTicket(url, ticket_id).done((data) => {
+          setTicketState("closed");
+          showSuccess("Ticket closed successfully", "Success");
+        }).fail((error) => {
+          showDanger(error.responseText, error.status);
+        });
     }
 
     function reopenCurrent(){
@@ -173,9 +176,12 @@
         ticket_id = '{{ ticket.meta.id }}'
         showInfo("Reopening ticket "+ticket_id, "Executing call");
 
-        reopen(url, ticket_id).success(() => {
-            setTicketState("open");
-        })
+        reopen(url, ticket_id).done((data) => {
+          setTicketState("open");
+          showSuccess("Ticket reopened successfully", "Success");
+        }).fail((error) => {
+          showDanger(error.responseText, error.status);
+        });
     }
 
     function deleteCurrent(){
@@ -183,23 +189,34 @@
       ticket_id = '{{ ticket.meta.id }}'
       showInfo("Deleting ticket "+ticket_id + " room.", "Executing call");
 
-      removeTicketRoom(url, ticket_id).success(() => {
-          setTicketState("deleted");
-      })
+      deleteTicketRoom(url, ticket_id).done((data) => {
+        setTicketState("deleted");
+        showSuccess("Ticket deleted successfully", "Success");
+      }).fail((error) => {
+        showDanger(error.responseText, error.status);
+      });
   }
 
     function removeStaffCurrent(staff_id){
         url = '{% url "unassign_staff_from_ticket" %}';
         ticket_id = '{{ ticket.meta.id }}';
         showInfo("Removing "+staff_id+" staff", "Executing call");
-        removeStaff(url, staff_id, ticket_id);
+        removeStaff(url, staff_id, ticket_id).done((data) => {
+          showSuccess("Staff removed successfully", "Success");
+        }).fail((error) => {
+          showDanger(error.responseText, error.status);
+        });;
     }
     
     function addStaffCurrent(staff_id){
         url = '{% url "claim_ticket_for_staff" %}';
         ticket_id = '{{ ticket.meta.id }}';
         showInfo("Adding "+staff_id+" staff", "Executing call");
-        addStaff(url, staff_id, ticket_id);
+        addStaff(url, staff_id, ticket_id).done((data) => {
+          showSuccess("Staff added successfully", "Success");
+        }).fail((error) => {
+          showDanger(error.responseText, error.status);
+        });;
     }
   </script>
   <script>

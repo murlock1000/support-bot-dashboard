@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 import json
+from typing import List
 from django.shortcuts import redirect, render
 from django.http import HttpRequest, JsonResponse
 from grpc import RpcError
@@ -10,6 +11,7 @@ from home import grpc_handler
 from home.helpers import ReqType, validateAjaxRequest, format_time_difference
 from home.models.repositories.DataTicketRepository import DataTicketRepository, TicketResult
 from home.models.repositories.DataChatRepository import DataChatRepository, ChatResult
+from support_bot.models.Repositories.UserRepository import UserRepository
 from support_bot.models.Repositories.StaffRepository import StaffRepository
 from support_bot.models.Repositories.TicketRepository import TicketRepository, TicketStatus
 from support_bot.models.Repositories.ChatRepository import ChatRepository, ChatStatus
@@ -321,7 +323,6 @@ def ticket(request, id):
     ticket['user_avatar_url'] = f"{settings.MATRIX_SERVER_URL}/_matrix/media/v3/thumbnail/{user_avatar_url[6:]}?width=48&height=48&method=crop"
     ticket['isClosed'] = ticket['status'] == 'closed'
     ticket['isDeleted'] = ticket['status'] == 'deleted'
-    print(ticket['isClosed'])
     ticket_meta = ({
             'meta': ticket,
             'staff': staff,
@@ -375,7 +376,6 @@ def chat(request, chat_room_id):
     chat['user_avatar_url'] = f"{settings.MATRIX_SERVER_URL}/_matrix/media/v3/thumbnail/{user_avatar_url[6:]}?width=48&height=48&method=crop"
     chat['isClosed'] = chat['status'] == 'closed'
     chat['isDeleted'] = chat['status'] == 'deleted'
-    print(chat['isClosed'])
     chat_meta = ({
             'meta': chat,
             'staff': staff,
@@ -457,7 +457,7 @@ def staff(request, user_id):
     tickers = {
         "open_tickets": data_ticket_rep.get_staff_ticket_count(TicketStatus.OPEN, staff_id),
         "closed_tickets_current_month": current_month_closed_tickets[0][1] if len(current_month_closed_tickets) > 0 else 0,
-        "closed_tickets": data_ticket_rep.get_staff_ticket_count(TicketStatus.CLOSED, staff_id),
+        "closed_tickets": data_ticket_rep.get_staff_ticket_count(TicketStatus.CLOSED, staff_id) + data_ticket_rep.get_staff_ticket_count(TicketStatus.DELETED, staff_id),
     }
     
     ## Get values for charts
@@ -551,13 +551,13 @@ def staff(request, user_id):
         'search_tickets': search_ticket_meta,
     }
     
-    print(context)
     return render(request, 'pages/staff.html', context)
 
 @login_required
 def ticket_search(request):
     ticket_rep: TicketRepository = store.repositories.ticketRep
     data_ticket_rep = DataTicketRepository(ticket_rep)
+    user_rep: UserRepository = store.repositories.userRep
     
     if request.method == 'POST':
         form = TicketFetchForm(request.POST)
@@ -566,15 +566,17 @@ def ticket_search(request):
             end_date = form.cleaned_data['end_date']
             status = form.cleaned_data['status']
             
-            print(start_date, end_date, status)
             ## Open ticket list info
-            open_tickets: [TicketResult] = data_ticket_rep.get_filtered_tickets(start_date, end_date, status)
-            print(open_tickets)
+            open_tickets: List[TicketResult] = data_ticket_rep.get_filtered_tickets(start_date, end_date, status)
             unique_staff = set()
             staff_avatar_urls = {}
+            user_meta = {}
 
             ticket_meta = []
             for ticket in open_tickets:
+                if ticket.user_id not in user_meta:
+                    user_meta[ticket.user_id] = user_rep.get_user_current_ticket_id(ticket.user_id)
+                    
                 staff = ticket_rep.get_assigned_staff(ticket.id)
 
                 for idx, user in enumerate(staff):
@@ -589,6 +591,7 @@ def ticket_search(request):
                 ticket_meta.append({
                         'meta': ticket.dict(),
                         'staff': staff,
+                        'isActive': user_meta[ticket.user_id] == ticket.id
                     }
                 )
     
@@ -602,6 +605,7 @@ def ticket_search(request):
 def chat_search(request):
     chat_rep: ChatRepository = store.repositories.chatRep
     data_chat_rep = DataChatRepository(chat_rep)
+    user_rep: UserRepository = store.repositories.userRep
     
     if request.method == 'POST':
         form = ChatFetchForm(request.POST)
@@ -610,15 +614,17 @@ def chat_search(request):
             end_date = form.cleaned_data['end_date']
             status = form.cleaned_data['status']
             
-            print(start_date, end_date, status)
             ## Open ticket list info
-            open_chats: [ChatResult] = data_chat_rep.get_filtered_chats(start_date, end_date, status)
-            print(open_chats)
+            open_chats: List[ChatResult] = data_chat_rep.get_filtered_chats(start_date, end_date, status)
             unique_staff = set()
             staff_avatar_urls = {}
+            user_meta = {}
 
             chat_meta = []
             for chat in open_chats:
+                if chat.user_id not in user_meta:
+                    user_meta[chat.user_id] = user_rep.get_user_current_chat_room_id(chat.user_id)
+                    
                 staff = chat_rep.get_assigned_staff(chat.chat_room_id)
 
                 for idx, user in enumerate(staff):
@@ -633,8 +639,8 @@ def chat_search(request):
                 chat_meta.append({
                         'meta': chat.dict(),
                         'staff': staff,
-                    }
-                )
+                        'isActive': user_meta[chat.user_id] == chat.chat_room_id
+                })
     
     else:
         form = ChatFetchForm()
@@ -661,10 +667,10 @@ def index(request):
     tickers = {
         "open_tickets": data_ticket_rep.get_ticket_count(TicketStatus.OPEN),
         "closed_tickets_current_month": current_month_closed_tickets[0][1] if len(current_month_closed_tickets) > 0 else 0,
-        "closed_tickets": data_ticket_rep.get_ticket_count(TicketStatus.CLOSED),
+        "closed_tickets": data_ticket_rep.get_ticket_count(TicketStatus.CLOSED) + data_ticket_rep.get_ticket_count(TicketStatus.DELETED),
         "open_chats": data_chat_rep.get_chat_count(TicketStatus.OPEN),
         "closed_chats_current_month": current_month_closed_chats[0][1] if len(current_month_closed_chats) > 0 else 0,
-        "closed_chats": data_chat_rep.get_chat_count(ChatStatus.CLOSED),
+        "closed_chats": data_chat_rep.get_chat_count(ChatStatus.CLOSED) + data_chat_rep.get_chat_count(ChatStatus.DELETED),
     }
     
     ## Get values for charts

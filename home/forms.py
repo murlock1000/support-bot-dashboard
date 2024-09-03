@@ -19,7 +19,7 @@ class UserWithTicketRequest(forms.Form):
     ticket_id = forms.CharField()
     
 class TicketRequest(forms.Form):
-    ticket_id = forms.CharField()
+    ticket_id = forms.IntegerField()
     
 class ChatFetchForm(forms.Form):
     start_date = forms.DateField(widget=forms.widgets.DateInput(attrs={'type': 'date'}), required=False)

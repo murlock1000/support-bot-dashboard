@@ -26,11 +26,9 @@ function removeStaff(url, staff_id, ticket_id){
           "X-CSRFToken": getCookie("csrftoken"),  // don't forget to include the 'getCookie' function
         },
         success: (data) => {
-            showSuccess("Staff removed successfully", "Success")
             console.log(data);
         },
         error: (error) => {
-            showDanger(error.responseText, error.status);
             console.log(error);
         }
       });
@@ -47,11 +45,9 @@ function addStaff(url, staff_id, ticket_id){
           "X-CSRFToken": getCookie("csrftoken"),  // don't forget to include the 'getCookie' function
         },
         success: (data) => {
-          showSuccess("Staff added successfully", "Success")
           console.log(data);
         },
         error: (error) => {
-          showDanger(error.responseText, error.status);
           console.log(error);
         }
       });
@@ -69,11 +65,9 @@ function removeChatStaff(url, staff_id, chat_room_id){
         "X-CSRFToken": getCookie("csrftoken"),  // don't forget to include the 'getCookie' function
       },
       success: (data) => {
-          showSuccess("Staff removed successfully", "Success")
           console.log(data);
       },
       error: (error) => {
-          showDanger(error.responseText, error.status);
           console.log(error);
       }
     });
@@ -90,11 +84,9 @@ function addChatStaff(url, staff_id, chat_room_id) {
         "X-CSRFToken": getCookie("csrftoken"),  // don't forget to include the 'getCookie' function
       },
       success: (data) => {
-        showSuccess("Staff added successfully", "Success")
         console.log(data);
       },
       error: (error) => {
-        showDanger(error.responseText, error.status);
         console.log(error);
       }
     });
@@ -111,17 +103,15 @@ function reopen(url, ticket_id){
           "X-CSRFToken": getCookie("csrftoken"),  // don't forget to include the 'getCookie' function
         },
         success: (data) => {
-          showSuccess("Ticket reopened successfully", "Success");
           console.log(data);
         },
         error: (error) => {
-          showDanger(error.responseText, error.status);
           console.log(error);
         }
       });
 }
 
-function removeTicketRoom(url, ticket_id){
+function deleteTicketRoom(url, ticket_id){
   return $.ajax({
       url: url,
       type: "POST",
@@ -132,17 +122,15 @@ function removeTicketRoom(url, ticket_id){
         "X-CSRFToken": getCookie("csrftoken"),  // don't forget to include the 'getCookie' function
       },
       success: (data) => {
-        showSuccess("Ticket room deleted successfully", "Success");
         console.log(data);
       },
       error: (error) => {
-        showDanger(error.responseText, error.status);
         console.log(error);
       }
     });
 }
 
-function removeChatRoom(url, chat_room_id){
+function deleteChatRoom(url, chat_room_id){
   return $.ajax({
       url: url,
       type: "POST",
@@ -153,17 +141,15 @@ function removeChatRoom(url, chat_room_id){
         "X-CSRFToken": getCookie("csrftoken"),  // don't forget to include the 'getCookie' function
       },
       success: (data) => {
-        showSuccess("Chat room deleted successfully", "Success");
         console.log(data);
       },
       error: (error) => {
-        showDanger(error.responseText, error.status);
         console.log(error);
       }
     });
 }
 
-function close(url, ticket_id){
+function closeTicket(url, ticket_id){
     return $.ajax({
         url: url,
         type: "POST",
@@ -174,11 +160,9 @@ function close(url, ticket_id){
           "X-CSRFToken": getCookie("csrftoken"),  // don't forget to include the 'getCookie' function
         },
         success: (data) => {
-          showSuccess("Ticket closed successfully", "Success")
           console.log(data);
         },
         error: (error) => {
-          showDanger(error.responseText, error.status);
           console.log(error);
         }
       });    
@@ -195,11 +179,9 @@ function closeChat(url, chat_room_id){
         "X-CSRFToken": getCookie("csrftoken"),  // don't forget to include the 'getCookie' function
       },
       success: (data) => {
-        showSuccess("Chat closed successfully", "Success")
         console.log(data);
       },
       error: (error) => {
-        showDanger(error.responseText, error.status);
         console.log(error);
       }
     });    
