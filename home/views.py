@@ -477,7 +477,10 @@ def staff(request, user_id):
             raised_tickets_per_day['values'][id] = day_tickets[1]
     
     # Closed tickets since last year (monthly closed tickets)
-    start_date = datetime(current_date.year-1, current_date.month+1, 1)
+    if (current_date.month == 12):
+        start_date = datetime(current_date.year, 1, 1)
+    else:
+        start_date = datetime(current_date.year-1, current_date.month+1, 1)
     raised_tickets_per_month_data = data_ticket_rep.get_staff_opened_tickets_by_month(start_date, datetime.now(), staff_id)
     
     raised_tickets_per_month = {
@@ -703,7 +706,11 @@ def index(request):
             raised_chats_per_day['values'][id] = day_chats[1]
 
     # Closed tickets since last year (monthly closed tickets)
-    start_date = datetime(current_date.year-1, current_date.month+1, 1)
+    if (current_date.month == 12):
+        start_date = datetime(current_date.year, 1, 1)
+    else:
+        start_date = datetime(current_date.year-1, current_date.month+1, 1)
+    
     raised_tickets_per_month_data = data_ticket_rep.get_opened_tickets_by_month(start_date, datetime.now())
     raised_chats_per_month_data = data_chat_rep.get_opened_chats_by_month(start_date, datetime.now())
     
