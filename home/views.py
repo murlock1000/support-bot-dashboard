@@ -11,12 +11,13 @@ from home import grpc_handler
 from home.helpers import ReqType, validateAjaxRequest, format_time_difference
 from home.models.repositories.DataTicketRepository import DataTicketRepository, TicketResult
 from home.models.repositories.DataChatRepository import DataChatRepository, ChatResult
+from proto.support_bot_pb2 import Event, MessageResponse
 from support_bot.models.Repositories.UserRepository import UserRepository
 from support_bot.models.Repositories.StaffRepository import StaffRepository
 from support_bot.models.Repositories.TicketRepository import TicketRepository, TicketStatus
 from support_bot.models.Repositories.ChatRepository import ChatRepository, ChatStatus
 from django.contrib.auth.decorators import login_required
-
+from google.protobuf import json_format
 
 #def fetch_room_messages(request, room_id):
 #    resp = grpc_handler.fetch_room_messages(room_id)
@@ -26,6 +27,47 @@ from django.contrib.auth.decorators import login_required
 #        return response
     
 #    return JsonResponse({'success': True, "messages": resp})
+
+def parse_event(event:Event):
+    source = json_format.MessageToDict(event.content)
+    
+    return {
+        "event_id": event.event_id,
+        "sender": event.sender,
+        "server_timestamp": event.server_timestamp,
+        "source": source
+    }
+@login_required
+def fetch_ticket_messages(request: HttpRequest):
+    try:
+        validateAjaxRequest(request, ReqType.GET)
+    except Exception as e:
+        response = JsonResponse({"error": str(e)})
+        response.status_code = 400
+        return response
+    
+    ticket_id = int(request.GET.get('ticket_id'))
+    start = request.GET.get('start', None)
+    end = request.GET.get('end', None)
+    limit = int(request.GET.get('limit', 10))
+    
+    response = grpc_handler.fetch_ticket_messages(ticket_id, start, end, limit)
+    
+    if isinstance(response, RpcError):
+        response = JsonResponse({"error": response.details()})
+        response.status_code = 500
+        return response
+    
+    messages = [
+        parse_event(event) for event in response.chunk
+    ]
+
+    return JsonResponse({
+        'messages': messages,
+        'start': response.start,
+        'end': response.end,
+        'has_more': response.end != ''
+    })
         
 @login_required
 def unassign_staff_from_ticket(request: HttpRequest):    

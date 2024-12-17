@@ -4,7 +4,7 @@ from django.http import HttpRequest
 
 
 class ReqType(Enum):
-    GET = "GET",
+    GET = "GET"
     POST = "POST"
 
 def is_ajax(request):

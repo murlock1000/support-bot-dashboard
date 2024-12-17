@@ -1,18 +1,47 @@
+
 function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== "") {
-      const cookies = document.cookie.split(";");
-      for (let i = 0; i < cookies.length; i++) {
-        const cookie = cookies[i].trim();
-        // Does this cookie string begin with the name we want?
-        if (cookie.substring(0, name.length + 1) === (name + "=")) {
-          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-          break;
-        }
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== "") {
+    const cookies = document.cookie.split(";");
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      // Does this cookie string begin with the name we want?
+      if (cookie.substring(0, name.length + 1) === (name + "=")) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
       }
     }
-    return cookieValue;
   }
+  return cookieValue;
+}
+
+function fetchTicketMessages(url, ticket_id, start, end, limit) {
+  showInfo("Fetching messages for ticket " + ticket_id, "Executing call");
+  return $.ajax({
+      url: url,
+      type: "GET",
+      dataType: "json",
+      data: { 
+          ticket_id: ticket_id,
+          start: start,
+          end: end,
+          limit: limit
+      },
+      headers: {
+          "X-Requested-With": "XMLHttpRequest",
+          "X-CSRFToken": getCookie("csrftoken"),
+      },
+      success: (data) => {
+          console.log(data);
+          return data;
+      },
+      error: (error) => {
+          console.log(error);
+          showDanger("Failed to fetch messages", error.status);
+      }
+  });
+}
+
 
 function removeStaff(url, staff_id, ticket_id){
     showInfo("Removing "+staff_id+" staff", "Executing call");

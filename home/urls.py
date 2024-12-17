@@ -20,4 +20,5 @@ urlpatterns = [
     path('ajax/claim_ticket_for_support/', views.claim_ticket_for_support, name='claim_ticket_for_support'),
     path('ajax/claim_chat_for_staff/', views.claim_chat_for_staff, name='claim_chat_for_staff'),
     path('ajax/claim_chat_for_support/', views.claim_chat_for_support, name='claim_chat_for_support'),
+    path('ajax/fetch_ticket_messages/', views.fetch_ticket_messages, name='fetch_ticket_messages'),
 ]

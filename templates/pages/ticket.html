@@ -46,7 +46,19 @@
           </div>
         </div>
 
-        <div id="messages-page">
+        <div id="messages-page" style="display:none">
+          <div class="row gx-4 mb-2 col-5">
+            <div class="row">
+                <div class="col-lg-3 col-sm-6 col-12 mt-sm-0 mt-2 ">
+                    <a id="load_messages_btn" class="btn bg-gradient-info toast-btn" type="button" href="javascript: fetchMessages()">Load More Messages</a>
+                </div>
+            </div>
+          </div>
+          <div id="start-of-chat" style="display: none; text-align: center;">Beginning of chat</div>
+          <div id="messages-container" class="messages-container">
+            <!-- Messages will be dynamically loaded here -->
+          </div>
+          <div id="loading" style="display: none; text-align: center;">Loading...</div>
         </div>
         <div id="ticket-page">
           <div class="row gx-4 mb-2 col-5">
@@ -292,6 +304,69 @@
         $("#ticket-page").hide();
         return;
       }
+    }
+  </script>
+  <script>
+    let url = '{% url "fetch_ticket_messages" %}';
+    let ticketId = "{{ ticket.meta.id }}";
+    let nextStartToken = "";
+    let hasMoreMessages = true;
+    let isLoading = false;
+    
+    async function fetchMessages() {
+      if (!hasMoreMessages || isLoading) return;
+  
+      isLoading = true;
+      document.getElementById('loading').style.display = 'block';
+
+      fetchTicketMessages(url, ticketId, nextStartToken, '', 10)
+        .done((response) => {
+            console.log("Messages fetched successfully:", response);
+            const data = response;
+            // Render messages
+            data.messages.forEach(renderMessage);
+            // Update pagination state
+            nextStartToken = data.end;
+            hasMoreMessages = data.has_more;
+            if (!hasMoreMessages) {
+              document.getElementById('start-of-chat').style.display = 'block';
+            }
+        })
+        .fail((error) => {
+            console.error("Error fetching messages:", error);
+            showDanger(error.responseText, error.status);
+        })
+        .always(() => {
+          isLoading = false;
+          document.getElementById('loading').style.display = 'none';
+        });
+    }
+  
+    function renderMessage(message) {
+      const container = document.getElementById('messages-container');
+      const messageDiv = document.createElement('div');
+      messageDiv.className = 'message';
+  
+      // Format timestamp
+      const date = new Date(message.server_timestamp);
+      const formattedTime = date.toLocaleString();
+  
+      // Display message content
+      messageDiv.innerHTML = `
+          <div>
+            <strong>${message.sender}</strong> <span class="timestamp">${formattedTime}</span>
+          </div>
+          <div>
+            ${message.source.type === 'm.room.message' ? 
+                (message.source.content.body ? 
+                    message.source.content.body : 
+                    '[No message body]') : 
+                JSON.stringify(message.source.content) || '[No content]'
+            }
+          </div>
+      `;
+  
+      container.prepend(messageDiv);
     }
   </script>
   {% endblock scripts %}
